@@ -1,0 +1,20 @@
+# Ambiente Virtual
+venv/
+.venv/
+env/
+
+# Banco de dados local (para não vazar dados reais no GitHub)
+*.sqlite3
+
+# Arquivos do Python / Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Arquivos do VS Code e IDEs
+.vscode/
+.idea/
+
+# Arquivos estáticos coletados
+staticfiles/
