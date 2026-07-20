@@ -1,4 +1,4 @@
-#  Sistema de Gestão de Grade Horária e Alocação Docente (CCM)
+#  Sistema de Gestão de Grade Horária e Alocação Docente 
 
 > Aplicação web desenvolvida em Django para centralização, mapeamento de disponibilidade e otimização do processo de montagem de grade horária acadêmica.
 
