@@ -57,10 +57,16 @@ Acesse a aplicação em: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ---
 
-##  Estrutura do Projeto
+## Estrutura do Projeto
 
+```text
+.
 ├── configuracao_site/   # Configurações globais do Django (settings, urls)
 ├── grade/               # App principal (models, views, templates)
+├── .dockerignore        # Regras de exclusão do Docker
 ├── .gitignore           # Regras de exclusão do Git
 ├── dados_ficticios.json # Massa de dados de teste
-└── manage.py            # Utilitário de comando do Django
+├── docker-compose.yml   # Orchestrador de containers
+├── Dockerfile           # Receita de construção do container
+├── manage.py            # Utilitário de comando do Django
+└── requirements.txt     # Dependências do projeto Python
