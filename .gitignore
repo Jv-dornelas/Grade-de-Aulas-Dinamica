@@ -3,6 +3,9 @@ venv/
 .venv/
 env/
 
+# Variáveis de ambiente (segredos, não versionar)
+.env
+
 # Banco de dados local (para não vazar dados reais no GitHub)
 *.sqlite3
 

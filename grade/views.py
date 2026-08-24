@@ -3,7 +3,7 @@ from .models import Unidade, HorarioAula, Professor, AlocacaoGrade, Disponibilid
 from datetime import datetime
 
 def exibir_grade(request):
-    SENHA_PROTECAO = "CCM_2026"  # Defina a senha que você preferir aqui
+    SENHA_PROTECAO = "grade2026"  # Defina a senha que você preferir aqui
     
     # Se o usuário tentar logar pela tela de bloqueio
     if request.method == "POST" and "senha_acesso" in request.POST:
