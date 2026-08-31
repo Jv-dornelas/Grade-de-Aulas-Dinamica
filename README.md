@@ -14,6 +14,7 @@ O objetivo deste sistema é substituir processos manuais e controles descentrali
 
 * **Linguagem:** Python 3.11
 * **Framework Web:** Django 5.2
+*  **API:** Django REST Framework (DRF)
 * **Banco de Dados:** SQLite (Desenvolvimento)
 * **Containerização:** Docker & Docker Compose
 * **Controle de Versão:** Git & GitHub
@@ -23,7 +24,8 @@ O objetivo deste sistema é substituir processos manuais e controles descentrali
 ##  Funcionalidades Principais
 
 * **Mapeamento de Disponibilidade:** Registro de restrições de dias e horários por docente.
-* **Gestão de Unidades e Turmas:** Organização centralizada por campus ou local de aula.
+* **Gestão de Unidades e Turmas:** Organização centralizada por unidade ou local de aula.
+* **API REST:** Endpoints estruturados para integração com aplicativo mobile.
 * **Carga de Dados Fictícios:** Ingestão de massa de dados via script JSON para testes automatizados e demonstração do sistema.
 
 ---
@@ -61,23 +63,24 @@ Todo o ambiente (Python, Django e dependências) já vem pronto dentro do contai
    ```
 
 4. **Aplicar as migrações do banco de dados:**
-   ```bash
-   docker exec grade-de-aulas-dinamica-web-1 python manage.py migrate
+```bash
+   docker compose exec web python manage.py migrate
    ```
 
 5. **Carregar os dados fictícios de teste:**
    ```bash
-   docker exec grade-de-aulas-dinamica-web-1 python manage.py loaddata dados_ficticios.json
+   docker compose exec web python popular_banco.py
    ```
 
 6. **Criar um usuário administrador (para acessar o /admin):**
    ```bash
-   docker exec -it grade-de-aulas-dinamica-web-1 python manage.py createsuperuser
+   docker compose exec web python manage.py createsuperuser
    ```
 
 7. **Acessar a aplicação:**
-   * App: [http://127.0.0.1:8000/grade](http://127.0.0.1:8000/grade)
-   * Admin: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+   API (JSON): http://127.0.0.1:8000/api/
+   Admin: http://127.0.0.1:8000/admin/
+   App (Antigo): http://127.0.0.1:8000/
 
 ---
 
@@ -95,7 +98,7 @@ docker compose down
 
 Rodar qualquer comando do Django (migrate, shell, createsuperuser, etc.):
 ```bash
-docker exec grade-de-aulas-dinamica-web-1 python manage.py <comando>
+docker compose exec web python manage.py <comando>
 ```
 
 Ver logs do container:
