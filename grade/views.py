@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Unidade, HorarioAula, Professor, AlocacaoGrade, Disponibilidade
 from datetime import datetime
+from .services import GradeService, GradeServiceError, AlocacaoService
 
 def exibir_grade(request):
     SENHA_PROTECAO = "grade2026"  # Defina a senha que você preferir aqui
@@ -18,6 +19,7 @@ def exibir_grade(request):
     if not request.session.get("grade_autorizada"):
         return render(request, "grade/login_grade.html")
 
+    # Carrega dados base
     unidades = Unidade.objects.all()
     horarios = HorarioAula.objects.all()
     professores = Professor.objects.all().order_by('nome')
@@ -32,50 +34,30 @@ def exibir_grade(request):
             data_atual_projeto = datetime.strptime('2026-04-25', '%Y-%m-%d').date()
     else:
         data_atual_projeto = datetime.strptime('2026-04-25', '%Y-%m-%d').date()
-        
+    
     sucesso = False
+    erro_negocio = None
 
-    if request.method == 'POST':
-        # 1. Salvar as Disponibilidades da data selecionada
-        Disponibilidade.objects.filter(data=data_atual_projeto).delete()
-        for prof in professores:
-            manha_marcada = request.POST.get(f"disp_manha_{prof.id}") == "on"
-            tarde_marcada = request.POST.get(f"disp_tarde_{prof.id}") == "on"
-            
-            Disponibilidade.objects.create(
-                data=data_atual_projeto,
-                professor=prof,
-                disponivel_manha=manha_marcada,
-                disponivel_tarde=tarde_marcada
+    # POST - Salvar dados usando a CAMADA DE SERVIÇO
+    if request.method == 'POST' and "senha_acesso" not in request.POST:
+        try:
+            # Tenta salvar rodando as validações do serviço
+            GradeService.salvar_grade_diaria(
+                data_alvo=data_atual_projeto,
+                post_data=request.POST,
+                professores=professores,
+                horarios=horarios,
+                unidades=unidades
             )
-
-        # 2. Salvar as Alocações da data selecionada
-        AlocacaoGrade.objects.filter(data=data_atual_projeto).delete()
-        for horario in horarios:
-            for unidade in unidades:
-                campo_name = f"alocacao_{horario.id}_{unidade.id}"
-                professor_id = request.POST.get(campo_name)
-                if professor_id:
-                    professor = Professor.objects.get(id=professor_id)
-                    AlocacaoGrade.objects.create(
-                        data=data_atual_projeto,
-                        horario=horario,
-                        unidade=unidade,
-                        professor=professor
-                    )
-        sucesso = True
+            sucesso = True
+            
+        except GradeServiceError as e:
+            # SE ALGUMA REGRA FALHAR: O Python cai aqui direto!
+            # Vamos recarregar a tela passando a mensagem de erro que o serviço gerou.
+            erro_negocio = str(e)
 
     # Buscar dados do dia selecionado
-    disponibilidades = Disponibilidade.objects.filter(data=data_atual_projeto)
-    disp_manha_salvas = {d.professor.id: d.disponivel_manha for d in disponibilidades}
-    disp_tarde_salvas = {d.professor.id: d.disponivel_tarde for d in disponibilidades}
-
-    alocacoes = AlocacaoGrade.objects.filter(data=data_atual_projeto)
-    alocacoes_salvas = {}
-    for aloc in alocacoes:
-        if aloc.horario.id not in alocacoes_salvas:
-            alocacoes_salvas[aloc.horario.id] = {}
-        alocacoes_salvas[aloc.horario.id][aloc.unidade.id] = aloc.professor.id
+    disp_manha_salvas, disp_tarde_salvas, alocacoes_salvas = AlocacaoService.obter_dicionarios_de_visualizacao(data_atual_projeto)
 
     context = {
         'unidades': unidades,
@@ -86,6 +68,7 @@ def exibir_grade(request):
         'disp_manha_salvas': disp_manha_salvas,
         'disp_tarde_salvas': disp_tarde_salvas,
         'sucesso': sucesso,
+        'erro_negocio': erro_negocio,
     }
     
     return render(request, 'grade/grade_tabela.html', context)

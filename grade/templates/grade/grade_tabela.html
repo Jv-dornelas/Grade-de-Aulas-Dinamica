@@ -90,6 +90,10 @@
         <div class="mensagem-sucesso">🎉 Painel atualizado! Grade e disponibilidades salvas com sucesso.</div>
     {% endif %}
 
+    {% if erro_negocio %}
+        <div class="mensagem-erro">⚠️ Conflito de Regra de Negócio: {{ erro_negocio }}</div>
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
         <input type="hidden" name="data_grade" value="{{ data_grade }}">
