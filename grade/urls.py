@@ -4,5 +4,5 @@ from . import views
 app_name = 'grade'
 
 urlpatterns = [
-    # Add your URL patterns here for legacy templates
+    path('', views.exibir_grade, name='exibir_grade'),
 ]
