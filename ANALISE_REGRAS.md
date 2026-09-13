@@ -7,6 +7,7 @@
 - **Código**: `services.py` - método `verificar_parente_vinculado()` + template (detecção de "cônjuge")
 - **Template**: Linha ~306-319 - Validação de cônjuges com alerta amarelo
 - **Campo BD**: `Professor.parente_vinculado` (ForeignKey self)
+- **Flexibilidade**: ⚠️ **SEM EXCEÇÃO** - Apenas aviso visual (amarelo), não bloqueia
 - **Limitação**: Apenas 1 parente por vez; não trata múltiplas relações
 
 ---
@@ -16,6 +17,9 @@
 - **Código**: `services.py` - método `verificar_conflito_horario()` (linhas 59-71)
 - **Lógica**: Bloqueia se `AlocacaoGrade` existe com mesmo (professor, data, horario)
 - **Feedback**: Mensagem de erro em vermelho no template
+- **Flexibilidade**: ✅ **COM EXCEÇÃO** - Campo `AlocacaoGrade.eh_excecao_horario` (proposto)
+  - Permite sobrescrever com justificativa
+  - Requer confirmação do coordenador
 
 ---
 
@@ -24,6 +28,7 @@
 - **Código**: Template `grade_tabela.html` (linhas 16-29 CSS `@media print`)
 - **Ação**: Botão "🖨️ Gerar PDF / Imprimir" chama `window.print()`
 - **Output**: Remove painéis laterais, mostra apenas tabela limpa para impressão/PDF
+- **Flexibilidade**: N/A
 
 ---
 
@@ -32,6 +37,7 @@
 - **Código**: Template (linhas 143-148)
 - **Output**: 1ª coluna da tabela mostra `{{ horario.nome }}` (ex: "1ª aula", "2ª aula")
 - **Campo BD**: `HorarioAula.hora_inicio` e `hora_fim` existem mas NÃO aparecem no template
+- **Flexibilidade**: N/A
 
 ---
 
@@ -44,23 +50,34 @@
   - Verifica intervalo entre aulas (0 min, 15 min, ou mais)
   - Valida se o transporte permite (carro/moto = OK; público/a pé = mais restritivo)
   - Pinta vermelho (crítico) ou amarelo (aviso)
+- **Flexibilidade**: ✅ **COM EXCEÇÃO** - Campo `AlocacaoGrade.eh_excecao_deslocamento` (proposto)
+  - Permite sobrescrever com justificativa
+  - Registra meio de transporte alternativo usado
 - **Limitação**: 
   - Intervalo de tempo é *hardcoded* no JS (não usa MatrizDistancia do BD)
   - Apenas detecta mudanças entre aulas consecutivas (não calcula rotas complexas)
 
 ---
 
-## ⚠️ REGRAS PARCIALMENTE IMPLEMENTADAS
+## ⚠️ REGRAS PARCIALMENTE IMPLEMENTADAS (COM FLEXIBILIDADE)
 
 ### 6. ⚠️ Professor definir quantas aulas pode dar no dia
-- **Status**: IMPLEMENTADO no backend, mas **NÃO VALIDADO no frontend**
+- **Status**: IMPLEMENTADO no backend, mas **NÃO VALIDADO em tempo real**
 - **Campo BD**: `Professor.limite_aulas` (default=5)
 - **Backend**: `services.py` (linhas 153-157) valida antes de salvar
 - **Frontend**: 
   - Exibe contador de aulas por professor nas estatísticas (linha ~397)
   - **MAS**: Não impede o usuário de selecionar antes de salvar
   - Validação só ocorre ao clicar "Salvar Tudo"
-- **UX Problem**: Usuário preenche a grade, clica salvar, vê erro. Poderia ser bloqueado em tempo real.
+- **Flexibilidade**: ✅ **NECESSÁRIA - COM EXCEÇÃO** 
+  - Campo `AlocacaoGrade.eh_excecao_limite_aulas` (proposto)
+  - Permitir exceder limite configurável (ex: até +2 aulas extras)
+  - Exigir justificativa (motivo da exceção)
+  - Aviso visual em tempo real: "⚠️ Professor X já tem 5 aulas (limite), adicionar 6ª?"
+  - Checkbox "Autorizar exceção de limite"
+- **UX Improvement**: 
+  - Bloquear visualmente em tempo real (desabilitar select após limite)
+  - Mostrar aviso com opção de "Permitir exceção com justificativa"
 
 ---
 
@@ -71,7 +88,13 @@
 - **Frontend**: Template (linhas ~397-416) - Estatísticas mostram contagem por área/unidade
   - Exibe tabela: "Aulas por Unidade (Área)" com contagem de Exatas, Humanas, Bio
   - **MAS**: É apenas informativo, não bloqueia acúmulo
-- **UX Problem**: 
+- **Flexibilidade**: ✅ **NECESSÁRIA - COM EXCEÇÃO**
+  - Campo `AlocacaoGrade.eh_excecao_area_acumulo` (proposto)
+  - Limite configurável por unidade/período (ex: máx 2 aulas de Exatas pela manhã)
+  - Permitir exceção com justificativa
+  - Aviso visual em tempo real quando atingir limite
+  - Checkbox "Autorizar acúmulo de área"
+- **UX Problem Atual**: 
   - Sem limite explícito, usuário pode colocar 5 aulas de Exatas na mesma unidade pela manhã
   - Aviso visual seria melhor (ou bloqueio com limite configurável)
 
@@ -88,6 +111,7 @@
   - ✅ Deslocamento com tempo insuficiente + sem carro = Amarelo
   - ✅ Cônjuges em unidades/turnos diferentes = Amarelo
   - ✅ Acúmulo de aulas (sem intervalo) = Amarelo
+- **Flexibilidade**: N/A - apenas informativo
 - **Limitação**: 
   - Cores são visuais mas **nenhuma mensagem textual** diz qual regra foi violada
   - Usuário vê "vermelho" mas não sabe exatamente por quê
@@ -96,7 +120,7 @@
 ---
 
 ### 9. ⚠️ Sistema gera escala para coordenador aceitar/atualizar
-- **Status**: NÃO IMPLEMENTADO
+- **Status**: NÃO IMPLEMENTADO (Apenas preenchimento manual)
 - **O que existe**:
   - App permite preenchimento manual da grade pelo coordenador
   - Backend valida regras de negócio
@@ -105,145 +129,138 @@
   - ❌ Workflow de aceitar/rejeitar (não há versão de "proposta" vs "final")
   - ❌ Histórico de alterações
   - ❌ Assinatura digital/aprovação formal
-- **Necessário para completar**:
+- **Flexibilidade**: N/A - não é prioritário por hora
+- **Necessário para completar** (futuro):
   - Criar um serviço de "geração de sugestões" via algoritmo genético ou constraint satisfaction
   - Implementar status de grade (RASCUNHO, PROPOSTA, APROVADA, ARQUIVADA)
   - Criar view para comparação antes/depois
 
 ---
 
-## ❌ REGRAS NÃO IMPLEMENTADAS
+## 🔧 SISTEMA DE EXCEÇÕES (NOVO)
 
-### 10. ❌ Horários/disponibilidade atualizados semanalmente (Automação)
-- **Status**: NÃO IMPLEMENTADO
-- **O que seria necessário**:
-  - ❌ Task scheduler (Celery, APScheduler ou cron)
-  - ❌ Email notificando professores para atualizar disponibilidade
-  - ❌ Persistência de disponibilidades semanais padrão (se houver padrão)
-  - ❌ Interface para replicar semana anterior
-- **Arquivo sugerido**: `grade/tasks.py` (ainda não existe)
+### Conceito Geral
+Permitir que o coordenador **autorize exceções justificadas** para regras críticas, sem quebrar a integridade do sistema. Cada exceção é registrada e auditada.
 
----
+### Campos a Adicionar ao Modelo `AlocacaoGrade`
 
-### 11. ❌ CRUDs limpadores de cadastros (Admin Panel)
-- **Status**: PARCIALMENTE IMPLEMENTADO (Django admin padrão existe, mas é bruto)
-- **O que existe**:
-  - Django admin nativo (não customizado)
-  - Acesso em `/admin`
-- **O que falta**:
-  - ❌ Interface customizada para deletar alocações por data/intervalo
-  - ❌ Confirmação com preview antes de deletar
-  - ❌ Logs de remoção
-  - ❌ Filtros avançados no admin
-- **Arquivo sugerido**: `grade/admin.py` (customizar classe AdminSite)
+```python
+class AlocacaoGrade(models.Model):
+    # ... campos existentes ...
+    
+    # Exceções autorizadas
+    eh_excecao_limite_aulas = models.BooleanField(default=False, help_text="Autorizar exceção de limite de aulas/dia")
+    motivo_excecao_limite = models.CharField(max_length=200, blank=True, null=True)
+    
+    eh_excecao_horario = models.BooleanField(default=False, help_text="Permitir duplicação de horário (raro)")
+    motivo_excecao_horario = models.CharField(max_length=200, blank=True, null=True)
+    
+    eh_excecao_deslocamento = models.BooleanField(default=False, help_text="Autorizar deslocamento com tempo insuficiente")
+    motivo_excecao_deslocamento = models.CharField(max_length=200, blank=True, null=True)
+    
+    eh_excecao_area_acumulo = models.BooleanField(default=False, help_text="Permitir acúmulo de aulas da mesma área")
+    motivo_excecao_area_acumulo = models.CharField(max_length=200, blank=True, null=True)
+    
+    # Auditoria
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+    autorizado_por = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
+```
 
----
+### Fluxo de Exceção no Template
 
-### 12. ❌ Pasta de validações organizada (Arquitetura)
-- **Status**: NÃO IMPLEMENTADO
-- **O que existe**:
-  - Validações espalhadas: `services.py` (backend) + `grade_tabela.html` (frontend)
-- **O que falta**:
-  - ❌ Pasta `grade/validadores/` com classes específicas:
-    - `HorarioValidator`
-    - `DeslocamentoValidator`
-    - `DisponibilidadeValidator`
-    - `ParentescoValidator`
-    - `AreaAcumuloValidator`
-  - ❌ Interface comum (base class)
-  - ❌ Testes unitários para cada validador
-- **Arquivo sugerido**: `grade/validadores/__init__.py` (novo)
+1. **Validação Inicial**: Sistema detecta violação de regra
+2. **Bloqueio Visual**: Select fica avermelhado, com mensagem de erro
+3. **Opção de Exceção**: Botão/checkbox "Autorizar exceção" aparece
+4. **Modal de Justificativa**: Coordenador insere motivo (ex: "Professor afastado, precisa compensar")
+5. **Salvamento com Flag**: Alocação é salva com `eh_excecao_*=True` e motivo registrado
+6. **Auditoria**: Log registra quem autorizou e quando
 
----
+### Exemplo de Uso
 
-### 13. ❌ Documentação técnica
-- **Status**: NÃO IMPLEMENTADO
-- **O que falta**:
-  - ❌ README.md com guia de setup
-  - ❌ Diagramas de arquitetura (Mermaid/Draw.io)
-  - ❌ Dicionário de dados (models)
-  - ❌ Guia de regras de negócio (fluxograma)
-  - ❌ API docs (DRF documentação)
-  - ❌ Guia do usuário (coordenador)
-- **Arquivo sugerido**: `docs/` (pasta nova)
-
----
-
-### 14. ❌ Automatização - Email
-- **Status**: NÃO IMPLEMENTADO
-- **O que seria necessário**:
-  - ❌ Configurar SMTP (settings.EMAIL_*)
-  - ❌ Template de emails (templates/emails/)
-  - ❌ Função para enviar grade final ao coordenador
-  - ❌ Notificação de conflitos pendentes
-  - ❌ Relatório semanal por professor
-- **Arquivo sugerido**: `grade/email_service.py` (novo)
+```javascript
+// No template, ao validar limite de aulas:
+if (aulas_por_prof > professor.limite_aulas) {
+    select.classList.add('conflito-vermelho');
+    select.title = "Limite de aulas atingido. Marque a checkbox abaixo para autorizar exceção.";
+    
+    // Exibe checkbox de exceção
+    const checkboxExcecao = document.createElement('input');
+    checkboxExcecao.type = 'checkbox';
+    checkboxExcecao.name = `excecao_limite_${campo_name}`;
+    checkboxExcecao.addEventListener('change', function() {
+        if (this.checked) {
+            const motivo = prompt("Motivo da exceção?", "");
+            if (motivo) {
+                select.classList.remove('conflito-vermelho');
+                select.classList.add('conflito-amarelo'); // Aviso, mas permitido
+            } else {
+                this.checked = false;
+            }
+        }
+    });
+}
+```
 
 ---
 
-### 15. ❌ Integrações (Google Maps, APIs externas)
-- **Status**: NÃO IMPLEMENTADO
-- **Sugestões**:
-  - ❌ Google Maps API para calcular distância real entre unidades
-  - ❌ Google Calendar para sincronizar grade com calendários pessoais
-  - ❌ Twilio/WhatsApp para notificações de última hora
-  - ❌ Integração com sistema de payroll (folha)
-- **Arquivo sugerido**: `grade/integracoes/` (pasta nova)
+## 📊 RESUMO ATUAL (Atualizado)
 
----
-
-## 📊 RESUMO
-
-| Regra | Status | Prioridade | Esforço |
-|-------|--------|-----------|---------|
-| Parentesco (turno/unidade) | ✅ Sim | Média | Baixo |
-| Sem 2 unidades simultâneas | ✅ Sim | Alta | Baixo |
-| Imprimir grade | ✅ Sim | Média | Baixo |
-| Mostrar horários | ✅ Sim | Baixa | Baixo |
-| Distância/transporte | ✅ Sim (JS simples) | Alta | Médio |
-| Limite aulas/dia | ⚠️ Parcial | Alta | Médio |
-| Sem acúmulo mesma área | ⚠️ Aviso visual | Média | Médio |
-| Avisar critério | ⚠️ Cores/Visual | Média | Baixo |
-| Geração automática | ❌ Não | Alta | Alto |
-| Automação semanal | ❌ Não | Média | Alto |
-| Admin CRUDs | ❌ Bruto | Baixa | Médio |
-| Pasta validadores | ❌ Não | Média | Médio |
-| Documentação | ❌ Não | Baixa | Médio |
-| Email automático | ❌ Não | Média | Médio |
-| Integrações Maps/APIs | ❌ Não | Baixa | Alto |
+| Regra | Status | Flexibilidade | Prioridade |
+|-------|--------|---------------|-----------|
+| Parentesco (turno/unidade) | ✅ Sim | ⚠️ Apenas aviso | Média |
+| Sem 2 unidades simultâneas | ✅ Sim | ✅ Com exceção | Alta |
+| Imprimir grade | ✅ Sim | N/A | Média |
+| Mostrar horários | ✅ Sim | N/A | Baixa |
+| Distância/transporte | ✅ Sim (JS simples) | ✅ Com exceção | Alta |
+| Limite aulas/dia | ⚠️ Parcial | ✅ **URGENTE** Com exceção | Alta |
+| Sem acúmulo mesma área | ⚠️ Aviso visual | ✅ **URGENTE** Com exceção | Média |
+| Avisar critério | ⚠️ Cores/Visual | N/A (só info) | Média |
+| Geração automática | ❌ Não | N/A | Baixa |
 
 ---
 
 ## 🎯 PRÓXIMAS PRIORIDADES (Recomendadas)
 
-1. **Bloqueio em tempo real**: Validar limite de aulas e acúmulo de áreas NO TEMPLATE (antes de salvar)
-2. **Legenda de cores**: Adicionar tooltip explicando cada critério de validação
-3. **Geração automática**: Criar algoritmo básico de sugestão (constraint satisfaction)
-4. **Admin customizado**: Criar interface de limpeza/backup de grades
-5. **Pastas de validadores**: Refatorar código para ficar testável e manutenível
+### URGENTE (Implementar AGORA)
+1. **Sistema de exceções**: Adicionar campos ao modelo + lógica de autorização
+2. **Bloqueio em tempo real**: Validar limite de aulas e acúmulo de áreas NO TEMPLATE (antes de salvar)
+3. **Legenda de cores**: Adicionar tooltip/legenda explicando cada critério de validação
+4. **Modal de justificativa**: Interface para autorizar exceções com motivo registrado
+
+### MÉDIO PRAZO
+5. **Auditoria completa**: Log de todas as exceções autorizadas
+6. **Relatório de exceções**: Dashboard mostrando padrões (qual regra é mais quebrada, etc)
+7. **Configuração de limites**: Admin customizado para ajustar limites por período/unidade
 
 ---
 
-## 🛠️ Arquivos a criar/modificar
+## 📁 Arquivos a Criar/Modificar
 
-### Criar
-- `grade/validadores/__init__.py`
-- `grade/validadores/horario.py`
-- `grade/validadores/deslocamento.py`
-- `grade/validadores/area.py`
-- `grade/email_service.py`
-- `grade/tasks.py` (Celery)
-- `grade/admin.py` (customizado)
-- `docs/README.md`
-- `docs/REGRAS_NEGOCIO.md`
+### Modificar (URGENTE)
+- `grade/models.py` - Adicionar campos de exceção em `AlocacaoGrade`
+- `grade/services.py` - Lógica que permite exceções após autorização
+- `grade/views.py` - Processar flags de exceção do formulário
+- `grade/templates/grade/grade_tabela.html` - Adicionar checkboxes de exceção + modal
+- `grade/migrations/` - Criar migration para novos campos
 
-### Modificar
-- `grade/templates/grade/grade_tabela.html` (adicionar tooltips, legenda)
-- `grade/services.py` (validações em tempo real)
-- `grade/views.py` (logging, auditoria)
-- `settings.py` (SMTP, Celery, logging)
+### Criar (MÉDIO PRAZO)
+- `grade/admin_customizado.py` - Interface para revisar exceções
+- `grade/relatorios.py` - Análise de padrões de exceção
 
 ---
 
-**Gerado em**: 2024
+## 📝 Notas Importantes
+
+- **Exceções não removem a regra**: Apenas permitem desvios justificados
+- **Auditoria obrigatória**: Todo desvio deve ser registrado para futuras análises
+- **Validação em 2 níveis**: 
+  - Backend: rejeita exceções sem autorização
+  - Frontend: avisa e oferece opção de autorizar
+- **Flexibilidade controlada**: Coordenador tem poder, mas cada ação é rastreada
+
+---
+
+**Última atualização**: 2024
 **Projeto**: Grade de Aulas Dinâmica CCM
+**Status**: Pronto para implementação de exceções

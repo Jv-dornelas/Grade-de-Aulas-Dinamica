@@ -86,5 +86,61 @@ class AlocacaoGrade(models.Model):
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
 
+    # ===== SISTEMA DE EXCEÇÕES (Permitir desvios autorizados) =====
+    eh_excecao_limite_aulas = models.BooleanField(
+        default=False, 
+        help_text="Autorizar exceção de limite de aulas/dia"
+    )
+    motivo_excecao_limite = models.CharField(
+        max_length=200, 
+        blank=True, 
+        null=True,
+        help_text="Justificativa para exceção de limite"
+    )
+    
+    eh_excecao_horario = models.BooleanField(
+        default=False, 
+        help_text="Permitir duplicação de horário (raro)"
+    )
+    motivo_excecao_horario = models.CharField(
+        max_length=200, 
+        blank=True, 
+        null=True,
+        help_text="Justificativa para exceção de horário"
+    )
+    
+    eh_excecao_deslocamento = models.BooleanField(
+        default=False, 
+        help_text="Autorizar deslocamento com tempo insuficiente"
+    )
+    motivo_excecao_deslocamento = models.CharField(
+        max_length=200, 
+        blank=True, 
+        null=True,
+        help_text="Justificativa para exceção de deslocamento"
+    )
+    
+    eh_excecao_area_acumulo = models.BooleanField(
+        default=False, 
+        help_text="Permitir acúmulo de aulas da mesma área"
+    )
+    motivo_excecao_area_acumulo = models.CharField(
+        max_length=200, 
+        blank=True, 
+        null=True,
+        help_text="Justificativa para exceção de acúmulo de área"
+    )
+    
+    # ===== AUDITORIA =====
+    criado_em = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    atualizado_em = models.DateTimeField(auto_now=True, null=True, blank=True)
+    autorizado_por = models.ForeignKey(
+        'auth.User', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        help_text="Usuário que autorizou a exceção"
+    )
+
     def __str__(self):
         return f"{self.data} - {self.unidade} - {self.horario}: {self.professor}"
