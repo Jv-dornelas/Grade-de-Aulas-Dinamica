@@ -1,97 +1,350 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso Restrito - Painel União</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+    <title>Acesso Restrito - Cursinho Chico Mendes</title>
+
+```
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #F8FAFC;
+        color: #0F172A;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Elementos decorativos do fundo */
+    body::before {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        background: #E0F2FE;
+        border-radius: 50%;
+        top: -180px;
+        right: -120px;
+        opacity: 0.8;
+    }
+
+    body::after {
+        content: "";
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        background: #DBEAFE;
+        border-radius: 50%;
+        bottom: -160px;
+        left: -100px;
+        opacity: 0.7;
+    }
+
+    .pagina-login {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .container-login {
+        width: 100%;
+        max-width: 430px;
+    }
+
+    /* Identidade */
+    .identidade {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .logo {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        border-radius: 16px;
+        background: #0F172A;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 27px;
+        font-weight: 700;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+
+    .identidade h1 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.4px;
+        color: #0F172A;
+    }
+
+    .identidade p {
+        margin: 6px 0 0;
+        color: #64748B;
+        font-size: 14px;
+    }
+
+    /* Card */
+    .card-login {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow:
+            0 20px 40px rgba(15, 23, 42, 0.08),
+            0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    .titulo-card {
+        margin-bottom: 24px;
+    }
+
+    .titulo-card h2 {
+        margin: 0 0 6px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #0F172A;
+    }
+
+    .titulo-card p {
+        margin: 0;
+        font-size: 13px;
+        color: #64748B;
+    }
+
+    /* Campo */
+    .campo {
+        margin-bottom: 18px;
+    }
+
+    .campo label {
+        display: block;
+        margin-bottom: 8px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .campo-senha {
+        position: relative;
+    }
+
+    input[type="password"],
+    input[type="text"] {
+        width: 100%;
+        height: 46px;
+        padding: 0 44px 0 14px;
+        border: 1px solid #CBD5E1;
+        border-radius: 9px;
+        background: #FFFFFF;
+        color: #0F172A;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    input[type="password"]::placeholder,
+    input[type="text"]::placeholder {
+        color: #94A3B8;
+    }
+
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+        border-color: #0284C7;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    .botao-visualizar {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #64748B;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 4px;
+    }
+
+    .botao-visualizar:hover {
+        color: #1E40AF;
+    }
+
+    /* Erro */
+    .mensagem-erro {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #B91C1C;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        border-left: 4px solid #EF4444;
+        padding: 12px 13px;
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 18px;
+        font-weight: 500;
+    }
+
+    /* Botão */
+    .btn-entrar {
+        width: 100%;
+        height: 46px;
+        background: #0F172A;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-entrar:hover {
+        background: #1E293B;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-entrar:active {
+        transform: translateY(0);
+    }
+
+    /* Rodapé */
+    .rodape {
+        text-align: center;
+        margin-top: 22px;
+        color: #94A3B8;
+        font-size: 12px;
+    }
+
+    /* Responsividade básica */
+    @media (max-width: 500px) {
+        .pagina-login {
+            padding: 20px;
         }
+
         .card-login {
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            box-sizing: border-box;
+            padding: 25px;
         }
-        h2 {
-            margin-top: 0;
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
+
+        .identidade h1 {
+            font-size: 20px;
         }
-        p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        input[type="password"] {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        input[type="password"]:focus {
-            border-color: #007bff;
-        }
-        .btn-entrar {
-            width: 100%;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .btn-entrar:hover {
-            background-color: #218838;
-        }
-        .mensagem-erro {
-            color: #dc3545;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-    </style>
+    }
+</style>
+```
+
 </head>
+
 <body>
 
-    <div class="card-login">
-        <h2>🔒 Área Restrita</h2>
-        <p>Insira a senha de coordenação para acessar a grade de horários e disponibilidades.</p>
-        
-        {% if erro %}
-            <div class="mensagem-erro">{{ erro }}</div>
-        {% endif %}
+```
+<main class="pagina-login">
 
-        <form method="POST">
-            {% csrf_token %}
-            <input type="password" name="senha_acesso" placeholder="Digite a senha de acesso" required autofocus>
-            <button type="submit" class="btn-entrar">Entrar no Painel</button>
-        </form>
+    <div class="container-login">
+
+        <div class="identidade">
+            <div class="logo">CM</div>
+
+            <h1>Cursinho Chico Mendes</h1>
+
+            <p>Painel de gerenciamento da grade</p>
+        </div>
+
+        <div class="card-login">
+
+            <div class="titulo-card">
+                <h2>Acesso restrito</h2>
+                <p>Entre com a senha de coordenação para acessar o sistema.</p>
+            </div>
+
+            {% if erro %}
+                <div class="mensagem-erro">
+                    <span>⚠</span>
+                    <span>{{ erro }}</span>
+                </div>
+            {% endif %}
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="campo">
+                    <label for="senha_acesso">Senha de acesso</label>
+
+                    <div class="campo-senha">
+                        <input
+                            type="password"
+                            id="senha_acesso"
+                            name="senha_acesso"
+                            placeholder="Digite sua senha"
+                            required
+                            autofocus
+                        >
+
+                        <button
+                            type="button"
+                            class="botao-visualizar"
+                            onclick="alternarSenha()"
+                            aria-label="Mostrar senha"
+                        >
+                            👁
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-entrar">
+                    Entrar no sistema
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="rodape">
+            © 2026 Cursinho Chico Mendes
+        </div>
+
     </div>
+
+</main>
+
+<script>
+    function alternarSenha() {
+        const campo = document.getElementById("senha_acesso");
+        const botao = document.querySelector(".botao-visualizar");
+
+        if (campo.type === "password") {
+            campo.type = "text";
+            botao.textContent = "🙈";
+            botao.setAttribute("aria-label", "Ocultar senha");
+        } else {
+            campo.type = "password";
+            botao.textContent = "👁";
+            botao.setAttribute("aria-label", "Mostrar senha");
+        }
+    }
+</script>
+```
 
 </body>
 </html>
