@@ -24,3 +24,10 @@ staticfiles/
 
 # Arquivos compactados
 *.zip
+android-app/.gradle/
+android-app/**/build/
+android-app/local.properties
+*.apk
+*.aab
+*.jks
+*.keystore

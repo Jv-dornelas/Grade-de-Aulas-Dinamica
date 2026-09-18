@@ -3,3 +3,6 @@ venv
 .gitignore
 __pycache__
 *.sqlite3
+.env
+android-app
+dist

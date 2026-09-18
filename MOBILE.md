@@ -2,6 +2,8 @@
 
 Endereço local: http://127.0.0.1:8000/mobile/
 
+O projeto do APK de demonstração fica em `android-app/`. Veja `android-app/README.md` para compilação, instalação e testes no Android.
+
 ## Preparar o ambiente
 
 ```powershell
