@@ -42,60 +42,140 @@
         }
 
         /* =========================
-           HEADER
+        HEADER
         ========================= */
 
         .topbar {
             height: 72px;
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
+            background: var(--navy);
+            color: white;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-            box-shadow: var(--shadow-sm);
+            padding: 0 36px;
+            gap: 32px;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
+            min-width: 290px;
         }
 
         .brand-logo {
             width: 42px;
             height: 42px;
-            background: var(--navy);
-            color: white;
             border-radius: 10px;
+            background: white;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--navy);
             font-weight: 800;
             font-size: 16px;
-            letter-spacing: -0.5px;
         }
 
         .brand-info strong {
             display: block;
             font-size: 15px;
             font-weight: 700;
-            color: var(--navy);
+            color: white;
         }
 
         .brand-info span {
             display: block;
-            margin-top: 2px;
+            margin-top: 3px;
+            color: #CBD5E1;
             font-size: 12px;
-            color: var(--muted);
         }
+
+        /* =========================
+        NAVEGAÇÃO
+        ========================= */
+
+        .menu-navegacao {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .menu-dropdown {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item {
+            display: inline-flex;
+            align-items: center;
+            height: 42px;
+            padding: 0 18px;
+            border-radius: 8px;
+            color: #E2E8F0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.15s ease, color 0.15s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--navy-light);
+            color: white;
+        }
+
+        /* =========================
+        DROPDOWN
+        ========================= */
+
+        .dropdown-conteudo {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 190px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+            padding: 7px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .menu-dropdown:hover .dropdown-conteudo {
+            display: block;
+        }
+
+        .dropdown-conteudo a {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.15s ease;
+        }
+
+        .dropdown-conteudo a:hover {
+            background: #EFF6FF;
+            color: var(--blue);
+        }
+
+        /* =========================
+        STATUS
+        ========================= */
 
         .status {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--muted);
+            color: #CBD5E1;
             font-size: 13px;
+            margin-left: auto;
         }
 
         .status-dot {
@@ -104,6 +184,8 @@
             background: var(--success);
             border-radius: 50%;
         }
+
+        
 
         /* =========================
            CONTAINER
@@ -750,19 +832,135 @@
 <body>
 
 <header class="topbar">
+
     <div class="brand">
-        <div class="brand-logo">CM</div>
+
+        <div class="brand-logo">
+            CM
+        </div>
 
         <div class="brand-info">
             <strong>Cursinho Chico Mendes</strong>
-            <span>Gestão acadêmica e organização de aulas</span>
+            <span>Gestão da Grade de Aulas</span>
         </div>
+
     </div>
 
+
+    <nav class="menu-navegacao">
+
+        <!-- HOME -->
+        <a
+            href="{% url 'grade:exibir_grade' %}"
+            class="menu-item"
+        >
+            🏠 Home
+        </a>
+
+
+        <!-- PROFESSORES -->
+        <div class="menu-dropdown">
+
+            <span class="menu-item">
+                Professor
+                <span class="seta">▼</span>
+            </span>
+
+            <div class="dropdown-conteudo">
+
+                <a href="{% url 'grade:cadastrar_professor' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_professor' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_professor' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_professores' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- UNIDADES -->
+        <div class="menu-dropdown">
+
+            <span class="menu-item">
+                Unidade
+                <span class="seta">▼</span>
+            </span>
+
+            <div class="dropdown-conteudo">
+
+                <a href="{% url 'grade:cadastrar_unidade' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_unidade' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_unidade' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_unidades' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- DISCIPLINAS -->
+        <div class="menu-dropdown">
+
+            <span class="menu-item">
+                Disciplina
+                <span class="seta">▼</span>
+            </span>
+
+            <div class="dropdown-conteudo">
+
+                <a href="{% url 'grade:cadastrar_disciplina' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_disciplina' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_disciplina' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_disciplinas' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
     <div class="status">
+
         <span class="status-dot"></span>
+
         Sistema ativo
+
     </div>
+
 </header>
 
 

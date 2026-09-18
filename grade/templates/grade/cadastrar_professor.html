@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastrar Professor | Cursinho Chico Mendes</title>
+
+    <style>
+        :root {
+            --navy: #0F172A;
+            --navy-light: #1E293B;
+            --blue: #1E40AF;
+            --sky: #0284C7;
+            --surface: #F8FAFC;
+            --white: #FFFFFF;
+            --border: #E2E8F0;
+            --text: #0F172A;
+            --muted: #64748B;
+            --success: #10B981;
+            --success-bg: #ECFDF5;
+            --success-border: #A7F3D0;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --danger-border: #FECACA;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        /* =========================
+           TOPO
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 36px;
+            gap: 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 290px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .brand-info strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .brand-info span {
+            display: block;
+            margin-top: 3px;
+            color: #CBD5E1;
+            font-size: 12px;
+        }
+
+        /* =========================
+           NAVEGAÇÃO
+        ========================= */
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .nav-item {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-button {
+            height: 42px;
+            border: 0;
+            background: transparent;
+            color: #E2E8F0;
+            padding: 0 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nav-button:hover {
+            background: var(--navy-light);
+            color: white;
+        }
+
+        .arrow {
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+
+        .nav-item:hover .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* =========================
+           DROPDOWN
+        ========================= */
+
+        .dropdown {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 190px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+            padding: 7px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: all 0.18s ease;
+            z-index: 100;
+        }
+
+        .nav-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown a {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .dropdown a:hover {
+            background: #EFF6FF;
+            color: var(--blue);
+        }
+
+        /* =========================
+           CONTEÚDO
+        ========================= */
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 38px 36px 60px;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .breadcrumb span {
+            color: var(--blue);
+            font-weight: 600;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 30px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        /* =========================
+           ALERTAS
+        ========================= */
+
+        .alert {
+            padding: 14px 16px;
+            border-radius: 9px;
+            margin-bottom: 22px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .alert-success {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: #047857;
+        }
+
+        .alert-error {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+            color: #B91C1C;
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .form-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .card-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .form-content {
+            padding: 28px;
+        }
+
+        /* =========================
+           FORMULÁRIO
+        ========================= */
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0 0 18px;
+            color: var(--navy);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
+            padding: 11px 12px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--sky);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.10);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        select[multiple] {
+            min-height: 130px;
+        }
+
+        .help {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 30px 0;
+        }
+
+        /* =========================
+           AVISO
+        ========================= */
+
+        .info-box {
+            margin-top: 22px;
+            padding: 14px 16px;
+            border: 1px solid #BFDBFE;
+            background: #EFF6FF;
+            border-radius: 9px;
+            color: #1E3A8A;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           AÇÕES
+        ========================= */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 26px;
+            border-top: 1px solid var(--border);
+            margin-top: 28px;
+        }
+
+        .button {
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-secondary {
+            background: #F1F5F9;
+            color: var(--text);
+        }
+
+        .button-secondary:hover {
+            background: #E2E8F0;
+        }
+
+        .button-primary {
+            background: var(--navy);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--navy-light);
+        }
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 900px) {
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .brand {
+                min-width: auto;
+            }
+
+            .navigation {
+                display: none;
+            }
+
+            .page {
+                padding: 28px 20px 50px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-logo">CM</div>
+
+        <div class="brand-info">
+            <strong>Cursinho Chico Mendes</strong>
+            <span>Gestão da Grade de Aulas</span>
+        </div>
+    </div>
+
+    <nav class="navigation">
+
+        <!-- HOME -->
+        <div class="nav-item">
+            <a
+                href="{% url 'grade:exibir_grade' %}"
+                class="nav-button"
+                style="text-decoration: none;"
+            >
+                🏠 Home
+            </a>
+        </div>
+
+
+        <!-- UNIDADE -->
+        <div class="nav-item">
+
+            <button class="nav-button">
+                Unidade
+                <span class="arrow">▼</span>
+            </button>
+
+            <div class="dropdown">
+
+                <a href="{% url 'grade:cadastrar_unidade' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_unidade' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_unidade' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_unidades' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- PROFESSOR -->
+        <div class="nav-item">
+
+            <button class="nav-button">
+                Professor
+                <span class="arrow">▼</span>
+            </button>
+
+            <div class="dropdown">
+
+                <a href="{% url 'grade:cadastrar_professor' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_professor' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_professor' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_professores' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- DISCIPLINA -->
+        <div class="nav-item">
+
+            <button class="nav-button">
+                Disciplina
+                <span class="arrow">▼</span>
+            </button>
+
+            <div class="dropdown">
+
+                <a href="{% url 'grade:cadastrar_disciplina' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_disciplina' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_disciplina' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_disciplinas' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<main class="page">
+
+    <div class="breadcrumb">
+        Gestão / Professor / <span>Cadastrar</span>
+    </div>
+
+
+    <div class="page-header">
+
+        <h1>Cadastrar professor</h1>
+
+        <p>
+            Cadastre um novo professor e configure suas informações
+            para utilização na montagem da grade de aulas.
+        </p>
+
+    </div>
+
+
+    <!-- MENSAGEM DE SUCESSO -->
+
+    {% if sucesso %}
+
+        <div class="alert alert-success">
+
+            <strong>Professor cadastrado com sucesso!</strong>
+
+            O professor foi registrado no sistema e já está disponível
+            para utilização na grade de aulas.
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- MENSAGEM DE ERRO -->
+
+    {% if erro %}
+
+        <div class="alert alert-error">
+
+            <strong>Não foi possível realizar o cadastro.</strong>
+
+            {{ erro }}
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <h2>Informações do professor</h2>
+
+            <p>
+                Preencha os dados abaixo para realizar o cadastro.
+            </p>
+
+        </div>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="form-content">
+
+                <h3 class="section-title">
+                    Dados básicos
+                </h3>
+
+
+                <div class="form-grid">
+
+                    <!-- NOME -->
+
+                    <div class="field">
+
+                        <label for="nome">
+                            Nome completo
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nome"
+                            name="nome"
+                            placeholder="Digite o nome do professor"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="field">
+
+                        <label for="email">
+                            E-mail
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="professor@email.com"
+                        >
+
+                    </div>
+
+
+                    <!-- TELEFONE -->
+
+                    <div class="field">
+
+                        <label for="telefone">
+                            Telefone
+                        </label>
+
+                        <input
+                            type="text"
+                            id="telefone"
+                            name="telefone"
+                            placeholder="(11) 99999-9999"
+                        >
+
+                    </div>
+
+
+                    <!-- TRANSPORTE -->
+
+                    <div class="field">
+
+                        <label for="meio_de_transporte">
+                            Meio de transporte
+                        </label>
+
+                        <select
+                            id="meio_de_transporte"
+                            name="meio_de_transporte"
+                        >
+
+                            <option value="PARTICULAR">
+                                Carro / Moto
+                            </option>
+
+                            <option value="PUBLICO">
+                                Transporte Público
+                            </option>
+
+                            <option value="OUTRO">
+                                A pé / Outro
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- LIMITE -->
+
+                    <div class="field">
+
+                        <label for="limite_aulas">
+                            Limite de aulas por dia
+                        </label>
+
+                        <input
+                            type="number"
+                            id="limite_aulas"
+                            name="limite_aulas"
+                            value="5"
+                            min="1"
+                        >
+
+                        <span class="help">
+                            Quantidade máxima de aulas que o professor
+                            poderá receber por dia.
+                        </span>
+
+                    </div>
+
+
+                    <!-- UNIDADE OFICIAL -->
+
+                    <div class="field">
+
+                        <label for="unidade_oficial">
+                            Unidade oficial
+                        </label>
+
+                        <select
+                            id="unidade_oficial"
+                            name="unidade_oficial"
+                        >
+
+                            <option value="">
+                                Selecione uma unidade
+                            </option>
+
+                            {% for unidade in unidades %}
+
+                                <option value="{{ unidade.id }}">
+                                    {{ unidade.nome }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="divider"></div>
+
+
+                <h3 class="section-title">
+                    Atuação e disponibilidade
+                </h3>
+
+
+                <div class="form-grid">
+
+                    <!-- DISCIPLINAS -->
+
+                    <div class="field">
+
+                        <label for="disciplinas">
+                            Disciplinas
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            id="disciplinas"
+                            name="disciplinas"
+                            multiple
+                            required
+                        >
+
+                            {% for disciplina in disciplinas %}
+
+                                <option value="{{ disciplina.id }}">
+                                    {{ disciplina.nome }} —
+                                    {{ disciplina.get_area_display }}
+                                </option>
+
+                            {% empty %}
+
+                                <option disabled>
+                                    Nenhuma disciplina cadastrada
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <span class="help">
+                            Segure Ctrl para selecionar mais de uma disciplina.
+                        </span>
+
+                    </div>
+
+
+                    <!-- UNIDADES PERMITIDAS -->
+
+                    <div class="field">
+
+                        <label for="unidades_permitidas">
+                            Unidades permitidas
+                        </label>
+
+                        <select
+                            id="unidades_permitidas"
+                            name="unidades_permitidas"
+                            multiple
+                        >
+
+                            {% for unidade in unidades %}
+
+                                <option value="{{ unidade.id }}">
+                                    {{ unidade.nome }}
+                                </option>
+
+                            {% empty %}
+
+                                <option disabled>
+                                    Nenhuma unidade cadastrada
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <span class="help">
+                            Unidades nas quais o professor pode receber aulas.
+                        </span>
+
+                    </div>
+
+
+                    <!-- PARENTE -->
+
+                    <div class="field full">
+
+                        <label for="parente_vinculado">
+                            Parente vinculado
+                        </label>
+
+                        <select
+                            id="parente_vinculado"
+                            name="parente_vinculado"
+                        >
+
+                            <option value="">
+                                Nenhum
+                            </option>
+
+                            {% for professor in professores %}
+
+                                <option value="{{ professor.id }}">
+                                    {{ professor.nome }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <span class="help">
+                            Utilize este campo caso exista um vínculo
+                            de parente que precise ser considerado na
+                            montagem da grade.
+                        </span>
+
+                    </div>
+
+
+                    <!-- OBSERVAÇÃO -->
+
+                    <div class="field full">
+
+                        <label for="observacao">
+                            Observações
+                        </label>
+
+                        <textarea
+                            id="observacao"
+                            name="observacao"
+                            placeholder="Adicione informações relevantes para a coordenação..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <strong>Importante:</strong>
+
+                    os dados cadastrados serão utilizados posteriormente
+                    na organização e montagem da grade de aulas.
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <a
+                        href="/"
+                        class="button button-secondary"
+                    >
+                        Voltar
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="button button-primary"
+                    >
+                        Cadastrar professor
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Excluir Unidade | Grade CCM</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #F8FAFC;
+            color: #0F172A;
+        }
+
+        .topbar {
+            height: 72px;
+            background: #0F172A;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .brand span {
+            color: #38BDF8;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            border: none;
+            background: transparent;
+            color: #E2E8F0;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .dropbtn:hover {
+            background: #1E293B;
+            color: white;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            min-width: 210px;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            color: #334155;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-content a:hover {
+            background: #F1F5F9;
+            color: #1E40AF;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            color: #0F172A;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #64748B;
+            font-size: 15px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .section-title {
+            margin: 0 0 20px;
+            font-size: 18px;
+            color: #0F172A;
+        }
+
+        .unidades {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .unidade-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #0F172A;
+            transition: 0.2s;
+        }
+
+        .unidade-item:hover {
+            border-color: #0284C7;
+            background: #F8FAFC;
+            transform: translateY(-1px);
+        }
+
+        .unidade-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .unidade-nome {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .unidade-responsavel {
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        .arrow {
+            font-size: 22px;
+            color: #0284C7;
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+            color: #64748B;
+            border: 1px dashed #CBD5E1;
+            border-radius: 12px;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border-radius: 9px;
+            background: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            color: #991B1B;
+            font-size: 14px;
+        }
+
+        @media (max-width: 750px) {
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .container {
+                margin-top: 30px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a href="{% url 'grade:exibir_grade' %}" class="brand">
+        Grade <span>CCM</span>
+    </a>
+
+    <nav class="menu">
+
+        <!-- HOME -->
+        <div class="menu-item">
+            <a href="{% url 'grade:exibir_grade' %}" class="menu-link">
+                🏠 Home
+            </a>
+        </div>
+
+        <!-- UNIDADE -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Unidade ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_unidade' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_unidade' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_unidade' %}">Excluir</a>
+                <a href="{% url 'grade:lista_unidades' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- PROFESSOR -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Professor ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_professor' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_professor' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_professor' %}">Excluir</a>
+                <a href="{% url 'grade:lista_professores' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- DISCIPLINA -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Disciplina ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_disciplina' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_disciplina' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_disciplina' %}">Excluir</a>
+                <a href="{% url 'grade:lista_disciplinas' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+    </nav>
+
+</header>
+
+<main class="container">
+
+    <div class="page-header">
+        <h1>Excluir unidade</h1>
+
+        <p>
+            Selecione a unidade que deseja excluir.
+        </p>
+    </div>
+
+    <div class="card">
+
+        {% if erro %}
+            <div class="alert">
+                {{ erro }}
+            </div>
+        {% endif %}
+
+        <h2 class="section-title">
+            Unidades cadastradas
+        </h2>
+
+        {% if unidades %}
+
+            <div class="unidades">
+
+                {% for unidade in unidades %}
+
+                    <a
+                        href="/unidades/excluir/{{ unidade.id }}/"
+                        class="unidade-item"
+                    >
+
+                        <div class="unidade-info">
+
+                            <div class="unidade-nome">
+                                {{ unidade.nome }}
+                            </div>
+
+                            <div class="unidade-responsavel">
+                                Responsável: {{ unidade.responsavel }}
+                            </div>
+
+                        </div>
+
+                        <div class="arrow">
+                            →
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+                Nenhuma unidade cadastrada.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+</body>
+</html>

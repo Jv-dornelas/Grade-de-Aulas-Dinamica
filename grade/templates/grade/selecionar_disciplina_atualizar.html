@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Atualizar Disciplina - Cursinho Chico Mendes</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        /* =========================
+           BARRA SUPERIOR
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 36px;
+            gap: 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 290px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .brand-info strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .brand-info span {
+            display: block;
+            margin-top: 3px;
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+
+        /* =========================
+           MENU
+        ========================= */
+
+        .menu-navegacao {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .menu-dropdown {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item {
+            display: inline-flex;
+            align-items: center;
+            height: 42px;
+            padding: 0 18px;
+            border-radius: 8px;
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.15s ease, color 0.15s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .dropdown-conteudo {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 190px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+            padding: 7px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .menu-dropdown:hover .dropdown-conteudo {
+            display: block;
+        }
+
+        .dropdown-conteudo a {
+            display: block;
+            text-decoration: none;
+            color: #0f172a;
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.15s ease;
+        }
+
+        .dropdown-conteudo a:hover {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        /* =========================
+           CONTEÚDO
+        ========================= */
+
+        .container {
+            max-width: 900px;
+            margin: 45px auto;
+            padding: 0 25px;
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .disciplina {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: 0.2s;
+        }
+
+        .disciplina:hover {
+            border-color: #0284c7;
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nome {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .area {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .seta {
+            font-size: 24px;
+            color: #1e40af;
+        }
+
+        /* =========================
+           MENSAGEM DE ERRO
+        ========================= */
+
+        .erro {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           LISTA VAZIA
+        ========================= */
+
+        .vazio {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        /* =========================
+           VOLTAR
+        ========================= */
+
+        .voltar {
+            display: inline-block;
+            margin-top: 22px;
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .voltar:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                CM
+            </div>
+
+            <div class="brand-info">
+                <strong>Cursinho Chico Mendes</strong>
+                <span>Gestão da Grade de Aulas</span>
+            </div>
+
+        </div>
+
+        <nav class="menu-navegacao">
+
+            <!-- HOME -->
+            <a
+                href="{% url 'grade:exibir_grade' %}"
+                class="menu-item"
+            >
+                🏠 Home
+            </a>
+
+            <!-- PROFESSORES -->
+            <div class="menu-dropdown">
+
+                <span class="menu-item">
+                    Professor
+                    <span class="seta">▼</span>
+                </span>
+
+                <div class="dropdown-conteudo">
+                    <a href="{% url 'grade:cadastrar_professor' %}">
+                        Cadastrar
+                    </a>
+
+                    <a href="{% url 'grade:atualizar_professor' %}">
+                        Atualizar
+                    </a>
+
+                    <a href="{% url 'grade:excluir_professor' %}">
+                        Excluir
+                    </a>
+
+                    <a href="{% url 'grade:lista_professores' %}">
+                        Visualizar lista
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- UNIDADES -->
+            <div class="menu-dropdown">
+
+                <span class="menu-item">
+                    Unidade
+                    <span class="seta">▼</span>
+                </span>
+
+                <div class="dropdown-conteudo">
+                    <a href="{% url 'grade:cadastrar_unidade' %}">
+                        Cadastrar
+                    </a>
+
+                    <a href="{% url 'grade:atualizar_unidade' %}">
+                        Atualizar
+                    </a>
+
+                    <a href="{% url 'grade:excluir_unidade' %}">
+                        Excluir
+                    </a>
+
+                    <a href="{% url 'grade:lista_unidades' %}">
+                        Visualizar lista
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- DISCIPLINAS -->
+            <div class="menu-dropdown">
+
+                <span class="menu-item">
+                    Disciplina
+                    <span class="seta">▼</span>
+                </span>
+
+                <div class="dropdown-conteudo">
+                    <a href="{% url 'grade:cadastrar_disciplina' %}">
+                        Cadastrar
+                    </a>
+
+                    <a href="{% url 'grade:atualizar_disciplina' %}">
+                        Atualizar
+                    </a>
+
+                    <a href="{% url 'grade:excluir_disciplina' %}">
+                        Excluir
+                    </a>
+
+                    <a href="{% url 'grade:lista_disciplinas' %}">
+                        Visualizar lista
+                    </a>
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+    <main class="container">
+
+        <div class="header">
+
+            <h1>Atualizar disciplina</h1>
+
+            <p>
+                Selecione a disciplina que deseja editar.
+            </p>
+
+        </div>
+
+        {% if erro %}
+
+            <div class="erro">
+                {{ erro }}
+            </div>
+
+        {% endif %}
+
+        <div class="card">
+
+            {% if disciplinas %}
+
+                {% for disciplina in disciplinas %}
+
+                    <a
+                        href="{% url 'grade:editar_disciplina' disciplina.id %}"
+                        class="disciplina"
+                    >
+
+                        <div class="info">
+
+                            <span class="nome">
+                                {{ disciplina.nome }}
+                            </span>
+
+                            <span class="area">
+                                {{ disciplina.get_area_display }}
+                            </span>
+
+                        </div>
+
+                        <span class="seta">
+                            →
+                        </span>
+
+                    </a>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="vazio">
+                    Nenhuma disciplina cadastrada.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <a
+            href="{% url 'grade:lista_disciplinas' %}"
+            class="voltar"
+        >
+            ← Voltar para a lista de disciplinas
+        </a>
+
+    </main>
+
+</body>
+
+</html>

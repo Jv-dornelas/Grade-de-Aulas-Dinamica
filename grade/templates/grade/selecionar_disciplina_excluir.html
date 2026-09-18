@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Excluir Disciplina - Cursinho Chico Mendes</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: white;
+            padding: 18px 40px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #cbd5e1;
+            margin-top: 4px;
+        }
+
+                /* ===== MENU SUPERIOR ===== */
+
+        .brand {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .brand span {
+            color: #38bdf8;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .menu-item {
+            position: relative;
+        }
+
+        .menu-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 9px 12px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .menu-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 180px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+            padding: 6px;
+            z-index: 100;
+        }
+
+        .menu-item:hover .dropdown {
+            display: block;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 7px;
+            color: #0f172a;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .dropdown a:hover {
+            background: #f1f5f9;
+            color: #1e40af;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 45px auto;
+            padding: 0 25px;
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .disciplina {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+
+            padding: 18px 20px;
+            margin-bottom: 12px;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+
+            text-decoration: none;
+            color: #0f172a;
+
+            transition: 0.2s;
+        }
+
+        .disciplina:hover {
+            border-color: #dc2626;
+            background: #fffafa;
+            transform: translateY(-1px);
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nome {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .area {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .acao {
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .erro {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-top: 22px;
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .voltar:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+
+    <a href="{% url 'grade:exibir_grade' %}" class="brand">
+        Grade <span>CCM</span>
+    </a>
+
+    <nav class="menu">
+
+        <!-- HOME -->
+        <div class="menu-item">
+            <a href="{% url 'grade:exibir_grade' %}" class="menu-link">
+                🏠 Home
+            </a>
+        </div>
+
+        <!-- UNIDADE -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Unidade ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_unidade' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_unidade' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_unidade' %}">Excluir</a>
+                <a href="{% url 'grade:lista_unidades' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- PROFESSOR -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Professor ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_professor' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_professor' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_professor' %}">Excluir</a>
+                <a href="{% url 'grade:lista_professores' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- DISCIPLINA -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Disciplina ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_disciplina' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_disciplina' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_disciplina' %}">Excluir</a>
+                <a href="{% url 'grade:lista_disciplinas' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+    </nav>
+
+</header>
+
+    <main class="container">
+
+        <div class="header">
+            <h1>Excluir disciplina</h1>
+            <p>Selecione a disciplina que deseja excluir.</p>
+        </div>
+
+        {% if erro %}
+            <div class="erro">
+                {{ erro }}
+            </div>
+        {% endif %}
+
+        <div class="card">
+
+            {% if disciplinas %}
+
+                {% for disciplina in disciplinas %}
+
+                    <a
+                        href="{% url 'grade:confirmar_exclusao_disciplina' disciplina.id %}"
+                        class="disciplina"
+                    >
+
+                        <div class="info">
+
+                            <div class="nome">
+                                {{ disciplina.nome }}
+                            </div>
+
+                            <div class="area">
+                                {{ disciplina.get_area_display }}
+                            </div>
+
+                        </div>
+
+                        <div class="acao">
+                            Excluir →
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="vazio">
+                    Nenhuma disciplina cadastrada.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <a
+            href="{% url 'grade:lista_disciplinas' %}"
+            class="voltar"
+        >
+            ← Voltar para a lista de disciplinas
+        </a>
+
+    </main>
+
+</body>
+</html>
