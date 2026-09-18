@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Confirmar Exclusão - Cursinho Chico Mendes</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: white;
+            padding: 18px 40px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #cbd5e1;
+            margin-top: 4px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 70px auto;
+            padding: 0 25px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 35px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            text-align: center;
+        }
+
+        .icone {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #fee2e2;
+            color: #dc2626;
+
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 28px;
+        }
+
+        .mensagem {
+            color: #64748b;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .nome-disciplina {
+            display: inline-block;
+            padding: 10px 16px;
+            margin-bottom: 25px;
+
+            background: #f1f5f9;
+            border-radius: 8px;
+
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .alerta {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+
+            padding: 14px 16px;
+            border-radius: 8px;
+
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .erro {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+
+            padding: 14px 16px;
+            border-radius: 8px;
+
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .botoes {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 22px;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background: #dc2626;
+            color: white;
+        }
+
+        button:hover {
+            background: #b91c1c;
+        }
+
+        .cancelar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 12px 22px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+            font-weight: bold;
+
+            color: #475569;
+            background: #e2e8f0;
+        }
+
+        .cancelar:hover {
+            background: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+
+    <a href="{% url 'grade:exibir_grade' %}" class="brand">
+        Grade <span>CCM</span>
+    </a>
+
+    <nav class="menu">
+
+        <!-- HOME -->
+        <div class="menu-item">
+            <a href="{% url 'grade:exibir_grade' %}" class="menu-link">
+                🏠 Home
+            </a>
+        </div>
+
+        <!-- UNIDADE -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Unidade ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_unidade' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_unidade' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_unidade' %}">Excluir</a>
+                <a href="{% url 'grade:lista_unidades' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- PROFESSOR -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Professor ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_professor' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_professor' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_professor' %}">Excluir</a>
+                <a href="{% url 'grade:lista_professores' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- DISCIPLINA -->
+        <div class="menu-item">
+            <a href="#" class="menu-link">
+                Disciplina ▾
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_disciplina' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_disciplina' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_disciplina' %}">Excluir</a>
+                <a href="{% url 'grade:lista_disciplinas' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+    </nav>
+
+</header>
+
+    <main class="container">
+
+        <div class="card">
+
+            <div class="icone">
+                !
+            </div>
+
+            <h1>Confirmar exclusão</h1>
+
+            <p class="mensagem">
+                Você está prestes a excluir a seguinte disciplina:
+            </p>
+
+            <div class="nome-disciplina">
+                {{ disciplina.nome }}
+            </div>
+
+            <div class="alerta">
+                Esta ação não poderá ser desfeita.
+            </div>
+
+            {% if erro %}
+                <div class="erro">
+                    {{ erro }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="botoes">
+
+                    <a
+                        href="{% url 'grade:excluir_disciplina' %}"
+                        class="cancelar"
+                    >
+                        Cancelar
+                    </a>
+
+                    <button type="submit">
+                        Sim, excluir
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

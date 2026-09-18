@@ -101,3 +101,24 @@ class MobileTests(TestCase):
         self.assertEqual(response.json()['start_url'], '/mobile/')
         self.assertEqual(len(response.json()['icons']), 2)
         self.assertEqual(self.client.get(reverse('grade:mobile_sw')).status_code, 200)
+
+    def test_new_management_pages_require_staff(self):
+        for entity in ('professores', 'disciplinas', 'unidades'):
+            for suffix in ('', 'cadastrar/', 'atualizar/', 'excluir/'):
+                url = '/' + entity + '/' + suffix
+                with self.subTest(url=url):
+                    self.assertEqual(self.client.get(url).status_code, 302)
+                    self.assertEqual(self.client.post(url, {}).status_code, 302)
+        self.assertEqual(self.client.post(f'/professores/excluir/{self.prof.pk}/').status_code, 302)
+        self.assertTrue(Professor.objects.filter(pk=self.prof.pk).exists())
+
+    def test_admin_can_render_new_management_pages(self):
+        admin = get_user_model().objects.create_user('gestor-telas', is_staff=True)
+        self.client.force_login(admin)
+        for entity in ('professores', 'disciplinas', 'unidades'):
+            for suffix in ('', 'cadastrar/', 'atualizar/', 'excluir/'):
+                url = '/' + entity + '/' + suffix
+                with self.subTest(url=url):
+                    self.assertEqual(self.client.get(url).status_code, 200)
+        for url in (f'/professores/atualizar/{self.prof.pk}/', f'/professores/excluir/{self.prof.pk}/'):
+            self.assertEqual(self.client.get(url).status_code, 200)

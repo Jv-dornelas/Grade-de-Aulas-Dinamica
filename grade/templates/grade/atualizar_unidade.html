@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Unidade | Grade CCM</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #F8FAFC;
+            color: #0F172A;
+        }
+
+        .topbar {
+            height: 72px;
+            background: #0F172A;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .brand span {
+            color: #38BDF8;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            border: none;
+            background: transparent;
+            color: #E2E8F0;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .dropbtn:hover {
+            background: #1E293B;
+            color: white;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            min-width: 210px;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            color: #334155;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-content a:hover {
+            background: #F1F5F9;
+            color: #1E40AF;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            color: #0F172A;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #64748B;
+            font-size: 15px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .section-title {
+            margin: 0 0 24px;
+            font-size: 18px;
+            color: #0F172A;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: 9px;
+            font-size: 15px;
+            color: #0F172A;
+            background: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #0284C7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: #F1F5F9;
+            color: #475569;
+        }
+
+        .btn-cancel:hover {
+            background: #E2E8F0;
+        }
+
+        .btn-save {
+            background: #1E40AF;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #1D4ED8;
+        }
+
+        .alert {
+            margin-bottom: 24px;
+            padding: 14px 16px;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #DCFCE7;
+            border: 1px solid #86EFAC;
+            color: #166534;
+        }
+
+        .alert-error {
+            background: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            color: #991B1B;
+        }
+
+        @media (max-width: 750px) {
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .container {
+                margin-top: 30px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        Grade <span>CCM</span>
+    </div>
+
+    <nav class="nav">
+
+        <div class="dropdown">
+            <button class="dropbtn">Unidade ▾</button>
+
+            <div class="dropdown-content">
+                <a href="/unidades/cadastrar/">Cadastrar</a>
+                <a href="/unidades/atualizar/">Atualizar</a>
+                <a href="#">Excluir</a>
+                <a href="/unidades/">Visualizar lista</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <button class="dropbtn">Professor ▾</button>
+
+            <div class="dropdown-content">
+                <a href="/professores/cadastrar/">Cadastrar</a>
+                <a href="/professores/atualizar/">Atualizar</a>
+                <a href="/professores/excluir/">Excluir</a>
+                <a href="/professores/">Visualizar lista</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <button class="dropbtn">Disciplina ▾</button>
+
+            <div class="dropdown-content">
+                <a href="/disciplinas/cadastrar/">Cadastrar</a>
+                <a href="#">Atualizar</a>
+                <a href="#">Excluir</a>
+                <a href="#">Visualizar lista</a>
+            </div>
+        </div>
+
+    </nav>
+</header>
+
+<main class="container">
+
+    <div class="page-header">
+        <h1>Atualizar unidade</h1>
+        <p>Edite as informações da unidade selecionada.</p>
+    </div>
+
+    <div class="card">
+
+        {% if sucesso %}
+            <div class="alert alert-success">
+                Unidade atualizada com sucesso!
+            </div>
+        {% endif %}
+
+        {% if erro %}
+            <div class="alert alert-error">
+                {{ erro }}
+            </div>
+        {% endif %}
+
+        <h2 class="section-title">
+            Dados da unidade
+        </h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="nome">Nome da unidade</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value="{{ unidade.nome }}"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="responsavel">Responsável</label>
+                    <input
+                        type="text"
+                        id="responsavel"
+                        name="responsavel"
+                        value="{{ unidade.responsavel }}"
+                        required
+                    >
+                </div>
+
+                <div class="field full">
+                    <label for="endereco">Endereço</label>
+                    <input
+                        type="text"
+                        id="endereco"
+                        name="endereco"
+                        value="{{ unidade.endereco|default:'' }}"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="cidade">Cidade</label>
+                    <input
+                        type="text"
+                        id="cidade"
+                        name="cidade"
+                        value="{{ unidade.cidade|default:'' }}"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="cep">CEP</label>
+                    <input
+                        type="text"
+                        id="cep"
+                        name="cep"
+                        value="{{ unidade.cep|default:'' }}"
+                    >
+                </div>
+
+            </div>
+
+            <div class="actions">
+                <a href="/unidades/atualizar/" class="btn btn-cancel">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-save">
+                    Salvar alterações
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>

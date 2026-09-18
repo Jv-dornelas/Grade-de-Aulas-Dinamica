@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Disciplinas | Grade CCM</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #F8FAFC;
+            color: #0F172A;
+        }
+
+        .topbar {
+            height: 72px;
+            background: #0F172A;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .brand span {
+            color: #38BDF8;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            border: none;
+            background: transparent;
+            color: #E2E8F0;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .dropbtn:hover {
+            background: #1E293B;
+            color: white;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            min-width: 210px;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            color: #334155;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-content a:hover {
+            background: #F1F5F9;
+            color: #1E40AF;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            color: #0F172A;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #64748B;
+            font-size: 15px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .section-title {
+            margin: 0 0 20px;
+            font-size: 18px;
+            color: #0F172A;
+        }
+
+        .disciplinas {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .disciplina-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #0F172A;
+            transition: 0.2s;
+        }
+
+        .disciplina-item:hover {
+            border-color: #0284C7;
+            background: #F8FAFC;
+            transform: translateY(-1px);
+        }
+
+        .disciplina-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .disciplina-nome {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .disciplina-area {
+            display: inline-block;
+            width: fit-content;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #EFF6FF;
+            color: #1E40AF;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .arrow {
+            font-size: 22px;
+            color: #0284C7;
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+            color: #64748B;
+            border: 1px dashed #CBD5E1;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 750px) {
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .container {
+                margin-top: 30px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a href="{% url 'grade:exibir_grade' %}" class="brand">
+        Grade <span>CCM</span>
+    </a>
+
+    <nav class="nav">
+
+        <!-- HOME -->
+        <div class="dropdown">
+            <a href="{% url 'grade:exibir_grade' %}" class="dropbtn home-link">
+                🏠 Home
+            </a>
+        </div>
+
+        <!-- UNIDADE -->
+        <div class="dropdown">
+            <button class="dropbtn">Unidade ▾</button>
+
+            <div class="dropdown-content">
+                <a href="{% url 'grade:cadastrar_unidade' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_unidade' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_unidade' %}">Excluir</a>
+                <a href="{% url 'grade:lista_unidades' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- PROFESSOR -->
+        <div class="dropdown">
+            <button class="dropbtn">Professor ▾</button>
+
+            <div class="dropdown-content">
+                <a href="{% url 'grade:cadastrar_professor' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_professor' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_professor' %}">Excluir</a>
+                <a href="{% url 'grade:lista_professores' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+        <!-- DISCIPLINA -->
+        <div class="dropdown">
+            <button class="dropbtn">Disciplina ▾</button>
+
+            <div class="dropdown-content">
+                <a href="{% url 'grade:cadastrar_disciplina' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_disciplina' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_disciplina' %}">Excluir</a>
+                <a href="{% url 'grade:lista_disciplinas' %}">Visualizar lista</a>
+            </div>
+        </div>
+
+    </nav>
+
+</header>
+
+<main class="container">
+
+    <div class="page-header">
+
+        <h1>Disciplinas</h1>
+
+        <p>
+            Visualize as disciplinas cadastradas no sistema.
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <h2 class="section-title">
+            Disciplinas cadastradas
+        </h2>
+
+        {% if disciplinas %}
+
+            <div class="disciplinas">
+
+                {% for disciplina in disciplinas %}
+
+                    <a
+                        href="#"
+                        class="disciplina-item"
+                    >
+
+                        <div class="disciplina-info">
+
+                            <div class="disciplina-nome">
+                                {{ disciplina.nome }}
+                            </div>
+
+                            <div class="disciplina-area">
+                                {{ disciplina.get_area_display }}
+                            </div>
+
+                        </div>
+
+                        <div class="arrow">
+                            →
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+                Nenhuma disciplina cadastrada.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+</body>
+</html>

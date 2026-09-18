@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Professores | Grade CCM</title>
+
+    <style>
+        :root {
+            --navy: #0F172A;
+            --navy-light: #1E293B;
+            --blue: #1E40AF;
+            --sky: #0284C7;
+
+            --surface: #F8FAFC;
+            --white: #FFFFFF;
+
+            --border: #E2E8F0;
+            --text: #0F172A;
+            --muted: #64748B;
+
+            --success: #10B981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        /* =========================
+           TOPO
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 36px;
+            gap: 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 290px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .brand-info strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .brand-info span {
+            display: block;
+            margin-top: 3px;
+            color: #CBD5E1;
+            font-size: 12px;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .nav-item {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-button {
+            height: 42px;
+            border: 0;
+            background: transparent;
+            color: #E2E8F0;
+            padding: 0 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            text-decoration: none;
+        }
+
+        .nav-button:hover {
+            background: var(--navy-light);
+            color: white;
+        }
+
+        .arrow {
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+
+        .nav-item:hover .arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 190px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+            padding: 7px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: all 0.18s ease;
+            z-index: 100;
+        }
+
+        .nav-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown a {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .dropdown a:hover {
+            background: #EFF6FF;
+            color: var(--blue);
+        }
+
+        /* =========================
+           CONTEÚDO
+        ========================= */
+
+        .container {
+            max-width: 1250px;
+
+            margin: 0 auto;
+
+            padding: 38px 32px 60px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: var(--muted);
+
+            margin-bottom: 14px;
+        }
+
+        .breadcrumb strong {
+            color: var(--text);
+        }
+
+        .header {
+            display: flex;
+
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+
+            margin-bottom: 8px;
+
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        /* =========================
+           BOTÃO
+        ========================= */
+
+        .button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            height: 44px;
+
+            padding: 0 20px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            transition: 0.2s;
+        }
+
+        .button-primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: #1D4ED8;
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: white;
+
+            border: 1px solid var(--border);
+            border-radius: 14px;
+
+            box-shadow:
+                0 4px 12px rgba(15, 23, 42, 0.04);
+
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .count {
+            background: #EFF6FF;
+
+            color: var(--blue);
+
+            border-radius: 20px;
+
+            padding: 6px 12px;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           TABELA
+        ========================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 900px;
+        }
+
+        th {
+            background: #F8FAFC;
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+            text-align: left;
+
+            padding: 15px 18px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 18px;
+
+            border-bottom: 1px solid var(--border);
+
+            vertical-align: middle;
+
+            font-size: 14px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #FAFBFC;
+        }
+
+        /* =========================
+           PROFESSOR
+        ========================= */
+
+        .professor-name {
+            font-size: 15px;
+            font-weight: 700;
+
+            margin-bottom: 4px;
+        }
+
+        .professor-id {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .contact {
+            line-height: 1.6;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        /* =========================
+           TAGS
+        ========================= */
+
+        .tags {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 6px;
+        }
+
+        .tag {
+            display: inline-flex;
+
+            align-items: center;
+
+            background: #EFF6FF;
+
+            color: #1E40AF;
+
+            border: 1px solid #DBEAFE;
+
+            border-radius: 6px;
+
+            padding: 5px 8px;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-unit {
+            background: #F0FDF4;
+
+            color: #166534;
+
+            border-color: #DCFCE7;
+        }
+
+        /* =========================
+           VAZIO
+        ========================= */
+
+        .empty {
+            padding: 70px 30px;
+
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 38px;
+
+            margin-bottom: 14px;
+        }
+
+        .empty h3 {
+            font-size: 18px;
+
+            margin-bottom: 8px;
+        }
+
+        .empty p {
+            color: var(--muted);
+
+            font-size: 14px;
+
+            margin-bottom: 22px;
+        }
+
+        /* =========================
+           RODAPÉ DA TABELA
+        ========================= */
+
+        .table-footer {
+            padding: 16px 24px;
+
+            border-top: 1px solid var(--border);
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            CM
+        </div>
+
+        <div class="brand-info">
+            <strong>Cursinho Chico Mendes</strong>
+            <span>Gestão da Grade de Aulas</span>
+        </div>
+
+    </div>
+
+    <nav class="navigation">
+
+        <!-- HOME -->
+        <div class="nav-item">
+            <a
+                href="{% url 'grade:exibir_grade' %}"
+                class="nav-button"
+            >
+                🏠 Home
+            </a>
+        </div>
+
+        <!-- UNIDADE -->
+        <div class="nav-item">
+
+            <a href="#" class="nav-button">
+                Unidade
+                <span class="arrow">▼</span>
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_unidade' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_unidade' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_unidade' %}">Excluir</a>
+                <a href="{% url 'grade:lista_unidades' %}">Visualizar lista</a>
+            </div>
+
+        </div>
+
+        <!-- PROFESSOR -->
+        <div class="nav-item">
+
+            <a href="#" class="nav-button">
+                Professor
+                <span class="arrow">▼</span>
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_professor' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_professor' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_professor' %}">Excluir</a>
+                <a href="{% url 'grade:lista_professores' %}">Visualizar lista</a>
+            </div>
+
+        </div>
+
+        <!-- DISCIPLINA -->
+        <div class="nav-item">
+
+            <a href="#" class="nav-button">
+                Disciplina
+                <span class="arrow">▼</span>
+            </a>
+
+            <div class="dropdown">
+                <a href="{% url 'grade:cadastrar_disciplina' %}">Cadastrar</a>
+                <a href="{% url 'grade:atualizar_disciplina' %}">Atualizar</a>
+                <a href="{% url 'grade:excluir_disciplina' %}">Excluir</a>
+                <a href="{% url 'grade:lista_disciplinas' %}">Visualizar lista</a>
+            </div>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<main class="container">
+
+    <div class="breadcrumb">
+        Gestão &nbsp;/&nbsp; Professor &nbsp;/&nbsp;
+        <strong>Visualizar lista</strong>
+    </div>
+
+
+    <div class="header">
+
+        <div>
+
+            <h1>Professores</h1>
+
+            <p>
+                Consulte os professores cadastrados no sistema.
+            </p>
+
+        </div>
+
+
+        <a
+            href="/professores/cadastrar/"
+            class="button button-primary"
+        >
+            + Cadastrar professor
+        </a>
+
+    </div>
+
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <div class="card-header-title">
+                Professores cadastrados
+            </div>
+
+            <div class="count">
+                {{ professores|length }}
+                {% if professores|length == 1 %}
+                    professor
+                {% else %}
+                    professores
+                {% endif %}
+            </div>
+
+        </div>
+
+
+        {% if professores %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Professor
+                            </th>
+
+                            <th>
+                                Contato
+                            </th>
+
+                            <th>
+                                Disciplinas
+                            </th>
+
+                            <th>
+                                Unidade oficial
+                            </th>
+
+                            <th>
+                                Limite diário
+                            </th>
+
+                            <th>
+                                Transporte
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for professor in professores %}
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="professor-name">
+                                        {{ professor.nome }}
+                                    </div>
+
+                                    <div class="professor-id">
+                                        ID #{{ professor.id }}
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="contact">
+
+                                        {% if professor.email %}
+                                            <div>
+                                                {{ professor.email }}
+                                            </div>
+                                        {% endif %}
+
+                                        {% if professor.telefone %}
+                                            <div class="muted">
+                                                {{ professor.telefone }}
+                                            </div>
+                                        {% endif %}
+
+                                        {% if not professor.email and not professor.telefone %}
+                                            <span class="muted">
+                                                Não informado
+                                            </span>
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if professor.disciplinas.all %}
+
+                                        <div class="tags">
+
+                                            {% for disciplina in professor.disciplinas.all %}
+
+                                                <span class="tag">
+                                                    {{ disciplina.nome }}
+                                                </span>
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    {% else %}
+
+                                        <span class="muted">
+                                            Nenhuma disciplina
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if professor.unidade_oficial %}
+
+                                        <span class="tag tag-unit">
+                                            {{ professor.unidade_oficial.nome }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="muted">
+                                            Não informado
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <strong>
+                                        {{ professor.limite_aulas }}
+                                    </strong>
+
+                                    aula(s)
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if professor.meio_de_transporte == "PARTICULAR" %}
+
+                                        Carro / Moto
+
+                                    {% elif professor.meio_de_transporte == "PUBLICO" %}
+
+                                        Transporte Público
+
+                                    {% elif professor.meio_de_transporte == "OUTRO" %}
+
+                                        A pé / Outro
+
+                                    {% else %}
+
+                                        {{ professor.meio_de_transporte }}
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="table-footer">
+
+                Total de
+                <strong>{{ professores|length }}</strong>
+                professor(es) cadastrado(s).
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    👨‍🏫
+                </div>
+
+                <h3>
+                    Nenhum professor cadastrado
+                </h3>
+
+                <p>
+                    Cadastre o primeiro professor para começar
+                    a organizar os dados da equipe.
+                </p>
+
+                <a
+                    href="/professores/cadastrar/"
+                    class="button button-primary"
+                >
+                    Cadastrar professor
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+</body>
+</html>

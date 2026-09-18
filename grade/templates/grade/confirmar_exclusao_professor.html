@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Confirmar exclusão | Grade CCM</title>
+
+    <style>
+        :root {
+            --navy: #0F172A;
+            --blue: #1E40AF;
+            --surface: #F8FAFC;
+            --border: #E2E8F0;
+            --text: #0F172A;
+            --muted: #64748B;
+            --danger: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .topbar {
+            height: 72px;
+            background: var(--navy);
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 36px;
+        }
+
+        .brand {
+            color: white;
+
+            font-size: 22px;
+            font-weight: 800;
+
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #38BDF8;
+        }
+
+        .container {
+            max-width: 700px;
+
+            margin: 0 auto;
+
+            padding: 70px 32px;
+        }
+
+        .breadcrumb {
+            color: var(--muted);
+
+            font-size: 14px;
+
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 8px 25px rgba(15, 23, 42, 0.06);
+
+            text-align: center;
+        }
+
+        .icon {
+            width: 58px;
+            height: 58px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+
+            background: #FEF2F2;
+
+            color: var(--danger);
+
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        h1 {
+            font-size: 25px;
+
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: var(--muted);
+
+            font-size: 15px;
+
+            line-height: 1.6;
+
+            margin-bottom: 24px;
+        }
+
+        .professor-name {
+            display: inline-block;
+
+            padding: 10px 16px;
+
+            margin-bottom: 24px;
+
+            background: #F8FAFC;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            font-size: 17px;
+
+            font-weight: 700;
+        }
+
+        .warning {
+            text-align: left;
+
+            padding: 15px;
+
+            margin-bottom: 25px;
+
+            background: #FFF7ED;
+
+            border: 1px solid #FED7AA;
+
+            border-radius: 8px;
+
+            color: #9A3412;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        .alert {
+            background: #FEF2F2;
+
+            color: #B91C1C;
+
+            border: 1px solid #FECACA;
+
+            padding: 14px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+        }
+
+        .button {
+            height: 44px;
+
+            padding: 0 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .button-secondary {
+            background: #F1F5F9;
+
+            color: var(--text);
+        }
+
+        .button-danger {
+            background: var(--danger);
+
+            color: white;
+        }
+
+        .button-danger:hover {
+            background: #DC2626;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a href="/" class="brand">
+        Grade <span>CCM</span>
+    </a>
+
+</header>
+
+
+<main class="container">
+
+    <div class="breadcrumb">
+        Gestão &nbsp;/&nbsp; Professor &nbsp;/&nbsp;
+        <strong>Confirmar exclusão</strong>
+    </div>
+
+
+    <section class="card">
+
+        <div class="icon">
+            !
+        </div>
+
+
+        <h1>
+            Excluir professor?
+        </h1>
+
+
+        <p class="description">
+            Você está prestes a excluir permanentemente
+            o seguinte professor:
+        </p>
+
+
+        <div class="professor-name">
+            {{ professor.nome }}
+        </div>
+
+
+        <div class="warning">
+
+            <strong>Atenção:</strong>
+
+            essa ação removerá o cadastro do professor.
+            Se existirem registros relacionados a esse professor
+            na grade, eles também poderão ser removidos conforme
+            as regras de relacionamento do banco de dados.
+
+        </div>
+
+
+        {% if erro %}
+
+            <div class="alert">
+                {{ erro }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="actions">
+
+                <a
+                    href="/professores/excluir/"
+                    class="button button-secondary"
+                >
+                    Cancelar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="button button-danger"
+                >
+                    Sim, excluir professor
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+</body>
+</html>

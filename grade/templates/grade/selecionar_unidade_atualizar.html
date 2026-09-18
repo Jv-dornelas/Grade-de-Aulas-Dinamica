@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Atualizar Unidade | Grade CCM</title>
+
+    <style>
+        :root {
+            --navy: #0F172A;
+            --navy-light: #1E293B;
+            --blue: #1E40AF;
+            --surface: #F8FAFC;
+            --white: #FFFFFF;
+            --border: #E2E8F0;
+            --text: #0F172A;
+            --muted: #64748B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        /* =========================
+           TOPBAR
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: var(--navy);
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 36px;
+            gap: 40px;
+        }
+
+        .brand {
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #38BDF8;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 100%;
+        }
+
+        .menu-item {
+            position: relative;
+            height: 100%;
+
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-link {
+            color: #CBD5E1;
+            text-decoration: none;
+
+            padding: 12px 16px;
+            border-radius: 8px;
+
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .menu-link:hover {
+            background: var(--navy-light);
+            color: white;
+        }
+
+        .dropdown {
+            position: absolute;
+
+            top: 58px;
+            left: 0;
+
+            min-width: 190px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            box-shadow:
+                0 12px 30px rgba(15, 23, 42, 0.15);
+
+            padding: 8px;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transform: translateY(-5px);
+
+            transition: 0.2s;
+
+            z-index: 100;
+        }
+
+        .menu-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+
+            transform: translateY(0);
+        }
+
+        .dropdown a {
+            display: block;
+
+            padding: 10px 12px;
+
+            border-radius: 7px;
+
+            color: var(--text);
+
+            text-decoration: none;
+
+            font-size: 14px;
+        }
+
+        .dropdown a:hover {
+            background: #F1F5F9;
+            color: var(--blue);
+        }
+
+        /* =========================
+           CONTEÚDO
+        ========================= */
+
+        .container {
+            max-width: 950px;
+
+            margin: 0 auto;
+
+            padding: 38px 32px 60px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+
+            color: var(--muted);
+
+            margin-bottom: 14px;
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--muted);
+
+            font-size: 16px;
+        }
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .card-title {
+            font-size: 19px;
+
+            font-weight: 700;
+
+            margin-bottom: 7px;
+        }
+
+        .card-description {
+            color: var(--muted);
+
+            font-size: 14px;
+
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           ALERTA
+        ========================= */
+
+        .alert {
+            background: #FEF2F2;
+
+            color: #B91C1C;
+
+            border: 1px solid #FECACA;
+
+            padding: 14px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        /* =========================
+           LISTA
+        ========================= */
+
+        .unit-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+        .unit-item {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 18px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+
+            text-decoration: none;
+
+            color: var(--text);
+
+            transition: 0.2s;
+        }
+
+        .unit-item:hover {
+            border-color: #93C5FD;
+
+            background: #F8FAFF;
+
+            transform: translateY(-1px);
+        }
+
+        .unit-name {
+            font-size: 16px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+        }
+
+        .unit-info {
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        .update-label {
+            color: var(--blue);
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .empty {
+            padding: 50px 20px;
+
+            text-align: center;
+
+            color: var(--muted);
+        }
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .menu {
+                display: none;
+            }
+
+            .container {
+                padding: 25px 18px;
+            }
+
+            .unit-item {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a href="{% url 'grade:exibir_grade' %}" class="brand">
+        Grade <span>CCM</span>
+    </a>
+
+    <nav class="menu">
+
+        <!-- HOME -->
+        <div class="menu-item">
+            <a href="{% url 'grade:exibir_grade' %}" class="menu-link">
+                🏠 Home
+            </a>
+        </div>
+
+        <!-- UNIDADE -->
+        <div class="menu-item">
+
+            <a href="#" class="menu-link">
+                Unidade ▾
+            </a>
+
+            <div class="dropdown">
+
+                <a href="{% url 'grade:cadastrar_unidade' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_unidade' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_unidade' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_unidades' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- PROFESSOR -->
+        <div class="menu-item">
+
+            <a href="#" class="menu-link">
+                Professor ▾
+            </a>
+
+            <div class="dropdown">
+
+                <a href="{% url 'grade:cadastrar_professor' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_professor' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_professor' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_professores' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- DISCIPLINA -->
+        <div class="menu-item">
+
+            <a href="#" class="menu-link">
+                Disciplina ▾
+            </a>
+
+            <div class="dropdown">
+
+                <a href="{% url 'grade:cadastrar_disciplina' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_disciplina' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_disciplina' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_disciplinas' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<main class="container">
+
+    <div class="breadcrumb">
+        Gestão &nbsp;/&nbsp; Unidade &nbsp;/&nbsp;
+        <strong>Atualizar</strong>
+    </div>
+
+
+    <div class="header">
+
+        <h1>Atualizar unidade</h1>
+
+        <p>
+            Selecione uma unidade para editar seus dados.
+        </p>
+
+    </div>
+
+
+    <section class="card">
+
+        <div class="card-title">
+            Unidades cadastradas
+        </div>
+
+        <div class="card-description">
+            Clique sobre a unidade que deseja atualizar.
+        </div>
+
+
+        {% if erro %}
+
+            <div class="alert">
+                {{ erro }}
+            </div>
+
+        {% endif %}
+
+
+        {% if unidades %}
+
+            <div class="unit-list">
+
+                {% for unidade in unidades %}
+
+                    <a
+                        href="/unidades/atualizar/{{ unidade.id }}/"
+                        class="unit-item"
+                    >
+
+                        <div>
+
+                            <div class="unit-name">
+                                {{ unidade.nome }}
+                            </div>
+
+                            <div class="unit-info">
+
+                                Responsável:
+                                {{ unidade.responsavel }}
+
+                                &nbsp; • &nbsp;
+
+                                ID #{{ unidade.id }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="update-label">
+                            Atualizar →
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+                Nenhuma unidade cadastrada.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+</body>
+</html>
