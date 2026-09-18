@@ -1,36 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import (
-    Unidade,
-    Disciplina,
-    Professor,
-    HorarioAula,
-    AlocacaoGrade,
-    Disponibilidade
-)
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import Unidade, Disciplina, HorarioAula, Professor, AlocacaoGrade, Disponibilidade
 from datetime import datetime
 from .services import GradeService, GradeServiceError, AlocacaoService
 
-
+@staff_member_required
 def exibir_grade(request):
-    SENHA_PROTECAO = "grade2026"
-
-    # Se o usuário tentar logar pela tela de bloqueio
-    if request.method == "POST" and "senha_acesso" in request.POST:
-        senha_digitada = request.POST.get("senha_acesso")
-
-        if senha_digitada == SENHA_PROTECAO:
-            request.session["grade_autorizada"] = True
-            return redirect(request.get_full_path())
-        else:
-            return render(
-                request,
-                "grade/login_grade.html",
-                {"erro": "Senha incorreta! Tente novamente."}
-            )
-
-    # Se o usuário não estiver autorizado, barra e manda para a tela de senha
-    if not request.session.get("grade_autorizada"):
-        return render(request, "grade/login_grade.html")
 
     # Carrega dados base
     unidades = Unidade.objects.all()
@@ -104,6 +79,7 @@ def exibir_grade(request):
     )
 
 
+@staff_member_required
 def cadastrar_professor(request):
     disciplinas = Disciplina.objects.all().order_by("nome")
     unidades = Unidade.objects.all().order_by("nome")
@@ -207,6 +183,7 @@ def cadastrar_professor(request):
         "grade/cadastrar_professor.html",
         contexto
     )
+@staff_member_required
 def cadastrar_disciplina(request):
     sucesso = False
     erro = None
@@ -251,6 +228,7 @@ def cadastrar_disciplina(request):
         "grade/cadastrar_disciplina.html",
         contexto
     )
+@staff_member_required
 def lista_professores(request):
     professores = (
         Professor.objects
@@ -268,6 +246,7 @@ def lista_professores(request):
         "grade/lista_professores.html",
         contexto
     )
+@staff_member_required
 def atualizar_professor(request, professor_id=None):
     professores = Professor.objects.all().order_by("nome")
     disciplinas = Disciplina.objects.all().order_by("nome")
@@ -433,6 +412,7 @@ def atualizar_professor(request, professor_id=None):
         "grade/atualizar_professor.html",
         contexto
     )
+@staff_member_required
 def excluir_professor(request, professor_id=None):
     professores = Professor.objects.all().order_by("nome")
 
@@ -507,6 +487,7 @@ def excluir_professor(request, professor_id=None):
         "grade/confirmar_exclusao_professor.html",
         contexto
     )
+@staff_member_required
 def cadastrar_unidade(request):
     sucesso = False
     erro = None
@@ -558,6 +539,7 @@ def cadastrar_unidade(request):
         "grade/cadastrar_unidade.html",
         contexto
     )
+@staff_member_required
 def lista_unidades(request):
     unidades = (
         Unidade.objects
@@ -574,6 +556,7 @@ def lista_unidades(request):
         "grade/lista_unidades.html",
         contexto
     )
+@staff_member_required
 def atualizar_unidade(request, unidade_id=None):
     unidades = Unidade.objects.all().order_by("nome")
 
@@ -663,6 +646,7 @@ def atualizar_unidade(request, unidade_id=None):
         "grade/atualizar_unidade.html",
         contexto
     )
+@staff_member_required
 def excluir_unidade(request, unidade_id=None):
     unidades = Unidade.objects.all().order_by("nome")
 
@@ -730,6 +714,7 @@ def excluir_unidade(request, unidade_id=None):
         "grade/confirmar_exclusao_unidade.html",
         contexto
     )
+@staff_member_required
 def lista_disciplinas(request):
     disciplinas = (
         Disciplina.objects
@@ -746,6 +731,7 @@ def lista_disciplinas(request):
         "grade/lista_disciplinas.html",
         contexto
     )
+@staff_member_required
 def atualizar_disciplina(request, disciplina_id=None):
     disciplinas = Disciplina.objects.all().order_by("nome")
 
@@ -821,6 +807,7 @@ def atualizar_disciplina(request, disciplina_id=None):
         "grade/atualizar_disciplina.html",
         contexto
     )
+@staff_member_required
 def excluir_disciplina(request, disciplina_id=None):
     disciplinas = Disciplina.objects.all().order_by("nome")
 

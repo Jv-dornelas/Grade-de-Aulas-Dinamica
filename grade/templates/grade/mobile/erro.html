@@ -1,0 +1,2 @@
+{% extends 'grade/mobile/base.html' %}
+{% block content %}<section class="panel"><p class="eyebrow">MINHA GRADE</p><h1>Vamos conferir seu acesso</h1><p role="alert">{{ mensagem }}</p><a class="button primary" href="{% url 'grade:mobile' %}">Voltar para esta semana</a></section>{% endblock %}

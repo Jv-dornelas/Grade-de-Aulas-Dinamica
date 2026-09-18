@@ -1,0 +1,20 @@
+{% extends 'grade/mobile/base.html' %}
+{% block content %}
+<section class="welcome"><p class="eyebrow">ESPAÇO DO PROFESSOR</p><h1>Olá, {{ professor.nome }}.</h1><p class="muted">Confira suas aulas e organize sua semana.</p></section>
+<section class="week-panel panel">
+  <div class="week-heading"><div><p class="eyebrow">SUA SEMANA</p><h2>{{ inicio|date:'d/m' }} — {{ fim|date:'d/m/Y' }}</h2></div><span class="count">{{ aulas|length }} aula{{ aulas|length|pluralize }}</span></div>
+  <nav class="week-nav" aria-label="Navegação por semana"><a class="button secondary" href="?semana={{ anterior|date:'Y-m-d' }}" aria-label="Semana anterior">← Anterior</a><a class="today" href="{% url 'grade:mobile' %}">Esta semana</a><a class="button secondary" href="?semana={{ proxima|date:'Y-m-d' }}" aria-label="Próxima semana">Próxima →</a></nav>
+  <form class="date-form" method="get"><label for="semana">Ir para uma data</label><div><input id="semana" type="date" name="semana" min="1900-01-01" max="2100-12-31" value="{{ inicio|date:'Y-m-d' }}" required><button class="button secondary" type="submit">Ver</button></div></form>
+</section>
+<div class="actions"><a class="button primary" href="{% url 'grade:mobile_pdf' %}?semana={{ inicio|date:'Y-m-d' }}">↓ Baixar PDF</a><button class="button secondary" id="imprimir" type="button">Imprimir</button></div>
+{% if not aulas %}<section class="empty panel"><span aria-hidden="true">☀</span><h2>Uma semana sem aulas cadastradas</h2><p>Escolha outra semana ou confirme a programação com o responsável.</p></section>{% endif %}
+<div class="days">
+{% for dia in dias %}
+  <section class="day {% if dia.data == hoje %}is-today{% endif %}"><h2>{{ dia.data|date:'l' }} <span>{{ dia.data|date:'d/m' }}</span>{% if dia.data == hoje %}<small>Hoje</small>{% endif %}</h2>
+    {% for aula in dia.aulas %}<article class="lesson"><div class="time"><strong>{{ aula.horario.hora_inicio|time:'H:i' }}</strong><span>{{ aula.horario.hora_fim|time:'H:i' }}</span></div><div class="lesson-info"><h3>{{ aula.unidade.nome }}</h3><p>{{ aula.horario.nome }}</p>{% if aula.unidade.endereco %}<p class="address">{{ aula.unidade.endereco }}{% if aula.unidade.cidade %} · {{ aula.unidade.cidade }}{% endif %}</p>{% endif %}</div></article>
+    {% empty %}<p class="no-lessons">Sem aulas cadastradas</p>{% endfor %}
+  </section>
+{% endfor %}
+</div>
+<aside class="install panel"><h2>Tenha sua grade sempre por perto</h2><p>No Android, abra o menu do Chrome e escolha “Instalar aplicativo” ou “Adicionar à tela inicial”. No iPhone, use o menu Compartilhar e “Adicionar à Tela de Início”.</p><button id="instalar" class="button secondary" type="button" hidden>Instalar Minha Grade</button><p class="muted small">A consulta usa internet. Baixe o PDF para guardar uma cópia desta semana.</p></aside>
+{% endblock %}

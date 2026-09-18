@@ -1,34 +1,39 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAdminUser
 from .models import Unidade, Disciplina, Professor, MatrizDistancia, HorarioAula, Disponibilidade, AlocacaoGrade
 from .serializers import (
     UnidadeSerializer, DisciplinaSerializer, ProfessorSerializer,
     MatrizDistanciaSerializer, HorarioAulaSerializer, DisponibilidadeSerializer, AlocacaoGradeSerializer
 )
 
-class UnidadeViewSet(viewsets.ModelViewSet):
+class AdminViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAdminUser,)
+
+
+class UnidadeViewSet(AdminViewSet):
     queryset = Unidade.objects.all()
     serializer_class = UnidadeSerializer
 
-class DisciplinaViewSet(viewsets.ModelViewSet):
+class DisciplinaViewSet(AdminViewSet):
     queryset = Disciplina.objects.all()
     serializer_class = DisciplinaSerializer
 
-class ProfessorViewSet(viewsets.ModelViewSet):
+class ProfessorViewSet(AdminViewSet):
     queryset = Professor.objects.all()
     serializer_class = ProfessorSerializer
 
-class MatrizDistanciaViewSet(viewsets.ModelViewSet):
+class MatrizDistanciaViewSet(AdminViewSet):
     queryset = MatrizDistancia.objects.all()
     serializer_class = MatrizDistanciaSerializer
 
-class HorarioAulaViewSet(viewsets.ModelViewSet):
+class HorarioAulaViewSet(AdminViewSet):
     queryset = HorarioAula.objects.all()
     serializer_class = HorarioAulaSerializer
 
-class DisponibilidadeViewSet(viewsets.ModelViewSet):
+class DisponibilidadeViewSet(AdminViewSet):
     queryset = Disponibilidade.objects.all()
     serializer_class = DisponibilidadeSerializer
 
-class AlocacaoGradeViewSet(viewsets.ModelViewSet):
+class AlocacaoGradeViewSet(AdminViewSet):
     queryset = AlocacaoGrade.objects.all()
     serializer_class = AlocacaoGradeSerializer
