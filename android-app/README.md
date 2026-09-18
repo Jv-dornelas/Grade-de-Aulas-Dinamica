@@ -1,5 +1,15 @@
 # Minha Grade para Android — demonstração acadêmica
 
+## Estado atual — 18/09/2026
+
+**Experimental: ainda não validado para apresentação.** No teste em aparelho físico, o usuário relatou que o APK continua com a tela em branco e não exibe a interface que funciona pelo navegador mobile. Os ajustes da versão 1.1 não resolveram esse comportamento no dispositivo.
+
+A compilação, a assinatura, a análise estática e os testes unitários passaram, mas isso não comprova o funcionamento do WebView no aparelho. A causa da tela em branco ainda não foi determinada. A investigação foi adiada a pedido do usuário.
+
+O estado foi preservado na branch `wip/android-tela-branca`. Não considerar o problema corrigido nem integrar novos ajustes ao código principal sem validar login, carregamento, PDF e impressão em um Android real. Até essa validação, a alternativa de demonstração é a versão web em `/mobile/`.
+
+Próxima investigação: comparar o mesmo endereço no Chrome e no APK do aparelho, confirmar o servidor salvo no app e coletar os erros de rede e do WebView. Não há alteração adicional no código de execução nesta atualização de status.
+
 Este projeto gera um **APK híbrido**: a interface e os dados vêm do Django, enquanto o Android oferece a janela do aplicativo, a configuração do servidor, o armazenamento de PDF, o compartilhamento e a impressão. É uma implementação WebView, sem Capacitor, Flutter ou React Native.
 
 ## Compilar
