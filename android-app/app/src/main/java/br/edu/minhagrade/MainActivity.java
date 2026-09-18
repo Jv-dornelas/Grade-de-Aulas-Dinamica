@@ -7,6 +7,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.widget.FrameLayout;
 import android.print.PrintAttributes;
 import android.print.PrintManager;
 import android.view.View;
@@ -40,7 +45,7 @@ import java.util.concurrent.Executors;
 
 /** Contêiner híbrido: telas no Django; conexão, impressão e arquivos no Android. */
 public class MainActivity extends Activity {
-    private static final String DEFAULT_SERVER = "http://192.168.15.37:8000";
+    private static final String DEFAULT_SERVER = "http://10.207.220.201:8000";
     private static final int SAVE_PDF = 10;
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private WebView web;
@@ -49,6 +54,15 @@ public class MainActivity extends Activity {
     private String server;
     private File pendingPdf;
     private boolean downloading;
+    private LinearLayout connectionPanel;
+    private TextView connectionTitle, connectionMessage;
+    private Button retryButton;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private boolean loadFailed;
+    private final Runnable connectionTimeout = () -> {
+        showConnectionError("O servidor demorou para responder. Confira o endereço e se o computador está na mesma rede.");
+        web.stopLoading();
+    };
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -62,7 +76,7 @@ public class MainActivity extends Activity {
         }
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.rgb(244, 247, 245));
+        root.setBackgroundColor(Color.rgb(22, 78, 71));
         root.setOnApplyWindowInsetsListener((view, insets) -> {
             if (android.os.Build.VERSION.SDK_INT >= 30) {
                 android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
@@ -74,23 +88,80 @@ public class MainActivity extends Activity {
             return insets;
         });
         LinearLayout toolbar = new LinearLayout(this);
-        toolbar.setPadding(dp(12), dp(4), dp(12), dp(4));
+        toolbar.setPadding(dp(20), dp(8), dp(12), dp(8));
         toolbar.setGravity(android.view.Gravity.CENTER_VERTICAL);
         status = new TextView(this);
-        status.setText("Minha Grade · Android");
-        status.setTextColor(Color.rgb(22, 78, 71));
+        status.setText("Minha Grade");
+        status.setTextSize(20);
+        status.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        status.setTextColor(Color.WHITE);
         toolbar.addView(status, new LinearLayout.LayoutParams(0, -2, 1));
         Button options = new Button(this);
-        options.setText("Opções");
+        options.setText("•••");
+        options.setContentDescription("Opções do aplicativo");
+        options.setTextColor(Color.WHITE);
+        options.setTextSize(22);
+        options.setAllCaps(false);
+        options.setBackground(rounded(Color.rgb(42, 98, 89), 14));
+        options.setElevation(0);
         options.setOnClickListener(v -> showOptions());
-        toolbar.addView(options);
+        toolbar.addView(options, new LinearLayout.LayoutParams(dp(52), dp(44)));
         root.addView(toolbar);
         progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         root.addView(progress, new LinearLayout.LayoutParams(-1, dp(3)));
         web = new WebView(this);
-        root.addView(web, new LinearLayout.LayoutParams(-1, 0, 1));
+        web.setBackgroundColor(Color.rgb(244, 247, 245));
+        FrameLayout content = new FrameLayout(this);
+        content.addView(web, new FrameLayout.LayoutParams(-1, -1));
+        connectionPanel = new LinearLayout(this);
+        connectionPanel.setOrientation(LinearLayout.VERTICAL);
+        connectionPanel.setGravity(android.view.Gravity.CENTER);
+        connectionPanel.setPadding(dp(28), dp(32), dp(28), dp(32));
+        connectionPanel.setBackgroundColor(Color.rgb(244, 247, 245));
+        TextView symbol = new TextView(this);
+        symbol.setText("▦");
+        symbol.setTextSize(60);
+        symbol.setTextColor(Color.rgb(22, 78, 71));
+        connectionPanel.addView(symbol);
+        TextView eyebrow = new TextView(this);
+        eyebrow.setText("ESPAÇO DO PROFESSOR");
+        eyebrow.setTextSize(11);
+        eyebrow.setLetterSpacing(.15f);
+        eyebrow.setTextColor(Color.rgb(82, 118, 106));
+        connectionPanel.addView(eyebrow);
+        connectionTitle = new TextView(this);
+        connectionTitle.setTextSize(28);
+        connectionTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        connectionTitle.setGravity(android.view.Gravity.CENTER);
+        connectionTitle.setTextColor(Color.rgb(32, 60, 54));
+        connectionTitle.setPadding(0, dp(20), 0, dp(12));
+        connectionPanel.addView(connectionTitle);
+        connectionMessage = new TextView(this);
+        connectionMessage.setTextSize(15);
+        connectionMessage.setGravity(android.view.Gravity.CENTER);
+        connectionMessage.setTextColor(Color.rgb(89, 110, 101));
+        connectionMessage.setPadding(0, 0, 0, dp(24));
+        connectionPanel.addView(connectionMessage);
+        retryButton = new Button(this);
+        retryButton.setText("Tentar novamente");
+        retryButton.setAllCaps(false);
+        retryButton.setTextColor(Color.WHITE);
+        retryButton.setBackground(rounded(Color.rgb(22, 78, 71), 14));
+        retryButton.setElevation(0);
+        retryButton.setOnClickListener(v -> web.loadUrl(server + "/mobile/"));
+        connectionPanel.addView(retryButton, new LinearLayout.LayoutParams(-1, dp(52)));
+        Button changeServer = new Button(this);
+        changeServer.setText("Configurar conexão");
+        changeServer.setAllCaps(false);
+        changeServer.setTextColor(Color.rgb(22, 78, 71));
+        changeServer.setBackgroundColor(Color.TRANSPARENT);
+        changeServer.setOnClickListener(v -> configureServer());
+        connectionPanel.addView(changeServer, new LinearLayout.LayoutParams(-1, dp(52)));
+        content.addView(connectionPanel, new FrameLayout.LayoutParams(-1, -1));
+        root.addView(content, new LinearLayout.LayoutParams(-1, 0, 1));
         setContentView(root);
         configureWeb();
+        showConnecting();
         if (!getPreferences(MODE_PRIVATE).getBoolean("configured", false)) {
             configureServer();
         } else {
@@ -99,6 +170,36 @@ public class MainActivity extends Activity {
     }
 
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
+
+    private GradientDrawable rounded(int color, int radius) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setColor(color);
+        shape.setCornerRadius(dp(radius));
+        return shape;
+    }
+
+    private void showConnecting() {
+        loadFailed = false;
+        connectionTitle.setText("Sua semana, organizada.");
+        connectionMessage.setText("Estamos conectando à sua grade.\n\n" + server);
+        retryButton.setVisibility(View.GONE);
+        connectionPanel.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.VISIBLE);
+        handler.removeCallbacks(connectionTimeout);
+        handler.postDelayed(connectionTimeout, 15000);
+    }
+
+    private void showConnectionError(String message) {
+        loadFailed = true;
+        handler.removeCallbacks(connectionTimeout);
+        if (isFinishing() || isDestroyed()) return;
+        status.setText("Minha Grade");
+        progress.setVisibility(View.GONE);
+        connectionTitle.setText("Vamos conectar sua grade");
+        connectionMessage.setText(message + "\n\nServidor configurado:\n" + server);
+        retryButton.setVisibility(View.VISIBLE);
+        connectionPanel.setVisibility(View.VISIBLE);
+    }
 
     @android.annotation.SuppressLint("SetJavaScriptEnabled")
     private void configureWeb() {
@@ -115,7 +216,7 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient() {
             @Override public void onProgressChanged(WebView view, int value) {
                 progress.setProgress(value);
-                progress.setVisibility(value == 100 ? View.GONE : View.VISIBLE);
+                progress.setVisibility(value == 100 || loadFailed ? View.GONE : View.VISIBLE);
             }
         });
         web.setWebViewClient(new WebViewClient() {
@@ -137,21 +238,26 @@ public class MainActivity extends Activity {
             }
             @Override public void onPageStarted(WebView view, String url, android.graphics.Bitmap icon) {
                 if (!isMobileUrl(url)) { view.stopLoading(); return; }
-                status.setText("Conectando…");
+                showConnecting();
             }
             @Override public void onPageFinished(WebView view, String url) {
-                if (!isMobileUrl(url)) return;
-                status.setText("Minha Grade · Android");
+                if (!isMobileUrl(url) || loadFailed) return;
+                handler.removeCallbacks(connectionTimeout);
+                connectionPanel.setVisibility(View.GONE);
+                status.setText("Minha Grade");
                 CookieManager.getInstance().flush();
             }
             @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (!request.isForMainFrame()) return;
-                status.setText("Sem conexão com o servidor");
-                new AlertDialog.Builder(MainActivity.this).setTitle("Não foi possível conectar")
-                    .setMessage("Confira se o computador está ligado, com o Docker rodando, e se ambos estão na mesma rede. Servidor: " + server)
-                    .setPositiveButton("Tentar novamente", (d, w) -> web.loadUrl(server + "/mobile/"))
-                    .setNeutralButton("Trocar servidor", (d, w) -> configureServer())
-                    .setNegativeButton("Fechar", null).show();
+                showConnectionError("Confira se o computador está ligado, com o Docker rodando, e se ambos estão na mesma rede. Se o IP mudou, toque em Configurar conexão.");
+            }
+            @Override public void onReceivedHttpError(WebView view, WebResourceRequest request, android.webkit.WebResourceResponse response) {
+                if (request.isForMainFrame() && (response.getStatusCode() >= 500 || response.getStatusCode() == 400))
+                    showConnectionError("O servidor retornou erro " + response.getStatusCode() + ". Confira a configuração do Django no computador.");
+            }
+            @Override public void onReceivedSslError(WebView view, android.webkit.SslErrorHandler sslHandler, android.net.http.SslError error) {
+                sslHandler.cancel();
+                showConnectionError("O certificado do servidor não é válido. Confira o endereço configurado.");
             }
             // Erros de certificado usam o comportamento padrão: cancelar, nunca ignorar.
         });
@@ -247,7 +353,7 @@ public class MainActivity extends Activity {
                 }
                 if (option == 2) printPage();
                 if (option == 3) configureServer();
-                if (option == 4) new AlertDialog.Builder(this).setTitle("Minha Grade · 1.0 demo")
+                if (option == 4) new AlertDialog.Builder(this).setTitle("Minha Grade · 1.1 demo")
                     .setMessage("Aplicativo híbrido para consulta de horários de professores. Interface Django em WebView, com arquivos, compartilhamento e impressão integrados ao Android.\n\nServidor: " + server + "\n\nO computador precisa estar ligado. PDFs baixados são cópias e não atualizam automaticamente.")
                     .setPositiveButton("Entendi", null).show();
             }).show();
@@ -352,6 +458,7 @@ public class MainActivity extends Activity {
         if (web.canGoBack()) web.goBack(); else super.onBackPressed();
     }
     @Override protected void onDestroy() {
+        handler.removeCallbacks(connectionTimeout);
         web.destroy();
         worker.shutdown();
         super.onDestroy();

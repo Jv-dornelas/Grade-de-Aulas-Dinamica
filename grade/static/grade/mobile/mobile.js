@@ -8,6 +8,17 @@ document.getElementById('imprimir')?.addEventListener('click', () => {
   else window.print();
 });
 if (isAndroidApp) {
+  // O APK já tem seu cabeçalho; mantém somente a ação de sair da sessão web.
+  const webHeader = document.querySelector('.topbar');
+  if (webHeader) {
+    if (webHeader.querySelector('form')) {
+      const brand = webHeader.querySelector('.brand');
+      if (brand) brand.hidden = true;
+      webHeader.style.justifyContent = 'flex-end';
+      webHeader.style.paddingTop = '0';
+      webHeader.style.paddingBottom = '8px';
+    } else webHeader.hidden = true;
+  }
   const installHint = document.querySelector('.install');
   if (installHint) installHint.hidden = true;
 }
