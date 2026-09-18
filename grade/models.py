@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # 1. TABELA DE UNIDADES / POLOS
 class Unidade(models.Model):
@@ -27,6 +28,11 @@ class Disciplina(models.Model):
 
 # 3. TABELA DE PROFESSORES
 class Professor(models.Model):
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='professor',
+        help_text='Conta usada pelo professor para consultar sua grade no celular.',
+    )
     TRANSPORTE_CHOICES = [
         ('PARTICULAR', 'Carro / Moto'),
         ('PUBLICO', 'Transporte Público'),

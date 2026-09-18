@@ -1,23 +1,11 @@
 from django.shortcuts import render, redirect
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import Unidade, HorarioAula, Professor, AlocacaoGrade, Disponibilidade
 from datetime import datetime
 from .services import GradeService, GradeServiceError, AlocacaoService
 
+@staff_member_required
 def exibir_grade(request):
-    SENHA_PROTECAO = "grade2026"  # Defina a senha que você preferir aqui
-    
-    # Se o usuário tentar logar pela tela de bloqueio
-    if request.method == "POST" and "senha_acesso" in request.POST:
-        senha_digitada = request.POST.get("senha_acesso")
-        if senha_digitada == SENHA_PROTECAO:
-            request.session["grade_autorizada"] = True
-            return redirect(request.get_full_path())
-        else:
-            return render(request, "grade/login_grade.html", {"erro": "Senha incorreta! Tente novamente."})
-
-    # Se o usuário não estiver autorizado, barra e manda para a tela de senha
-    if not request.session.get("grade_autorizada"):
-        return render(request, "grade/login_grade.html")
 
     # Carrega dados base
     unidades = Unidade.objects.all()
