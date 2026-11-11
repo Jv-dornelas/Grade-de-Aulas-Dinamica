@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -251,52 +252,13 @@
             }
         }
     </style>
+<link rel="stylesheet" href="{% static 'grade/navegacao.css' %}?v=20261110-3">
+<link rel="stylesheet" href="{% static 'grade/formularios.css' %}?v=20261111">
 </head>
 
-<body>
+<body class="pagina-cadastro">
 
-<header class="topbar">
-    <div class="brand">
-        Grade <span>CCM</span>
-    </div>
-
-    <nav class="nav">
-
-        <div class="dropdown">
-            <button class="dropbtn">Unidade ▾</button>
-
-            <div class="dropdown-content">
-                <a href="/unidades/cadastrar/">Cadastrar</a>
-                <a href="/unidades/atualizar/">Atualizar</a>
-                <a href="#">Excluir</a>
-                <a href="/unidades/">Visualizar lista</a>
-            </div>
-        </div>
-
-        <div class="dropdown">
-            <button class="dropbtn">Professor ▾</button>
-
-            <div class="dropdown-content">
-                <a href="/professores/cadastrar/">Cadastrar</a>
-                <a href="/professores/atualizar/">Atualizar</a>
-                <a href="/professores/excluir/">Excluir</a>
-                <a href="/professores/">Visualizar lista</a>
-            </div>
-        </div>
-
-        <div class="dropdown">
-            <button class="dropbtn">Disciplina ▾</button>
-
-            <div class="dropdown-content">
-                <a href="/disciplinas/cadastrar/">Cadastrar</a>
-                <a href="#">Atualizar</a>
-                <a href="#">Excluir</a>
-                <a href="#">Visualizar lista</a>
-            </div>
-        </div>
-
-    </nav>
-</header>
+{% include 'grade/navegacao_principal.html' %}
 
 <main class="container">
 
@@ -308,13 +270,13 @@
     <div class="card">
 
         {% if sucesso %}
-            <div class="alert alert-success">
+            <div class="alert alert-success" role="status">
                 Unidade atualizada com sucesso!
             </div>
         {% endif %}
 
         {% if erro %}
-            <div class="alert alert-error">
+            <div class="alert alert-error" role="alert">
                 {{ erro }}
             </div>
         {% endif %}
@@ -323,76 +285,7 @@
             Dados da unidade
         </h2>
 
-        <form method="POST">
-            {% csrf_token %}
-
-            <div class="form-grid">
-
-                <div class="field">
-                    <label for="nome">Nome da unidade</label>
-                    <input
-                        type="text"
-                        id="nome"
-                        name="nome"
-                        value="{{ unidade.nome }}"
-                        required
-                    >
-                </div>
-
-                <div class="field">
-                    <label for="responsavel">Responsável</label>
-                    <input
-                        type="text"
-                        id="responsavel"
-                        name="responsavel"
-                        value="{{ unidade.responsavel }}"
-                        required
-                    >
-                </div>
-
-                <div class="field full">
-                    <label for="endereco">Endereço</label>
-                    <input
-                        type="text"
-                        id="endereco"
-                        name="endereco"
-                        value="{{ unidade.endereco|default:'' }}"
-                    >
-                </div>
-
-                <div class="field">
-                    <label for="cidade">Cidade</label>
-                    <input
-                        type="text"
-                        id="cidade"
-                        name="cidade"
-                        value="{{ unidade.cidade|default:'' }}"
-                    >
-                </div>
-
-                <div class="field">
-                    <label for="cep">CEP</label>
-                    <input
-                        type="text"
-                        id="cep"
-                        name="cep"
-                        value="{{ unidade.cep|default:'' }}"
-                    >
-                </div>
-
-            </div>
-
-            <div class="actions">
-                <a href="/unidades/atualizar/" class="btn btn-cancel">
-                    Cancelar
-                </a>
-
-                <button type="submit" class="btn btn-save">
-                    Salvar alterações
-                </button>
-            </div>
-
-        </form>
+        {% include 'grade/ficha_unidade_form.html' %}
 
     </div>
 

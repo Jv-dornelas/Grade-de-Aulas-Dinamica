@@ -1,0 +1,19 @@
+{% if erro_replicacao %}<div class="semana-aviso erro" role="alert">{{ erro_replicacao }}</div>{% endif %}
+{% if replicacao_previa %}
+<section class="previa-integrada" aria-labelledby="titulo-replicacao">
+<h3 id="titulo-replicacao">Prévia da replicação · {{ replicacao_inicio|date:'d/m/Y' }} a {{ replicacao_fim|date:'d/m/Y' }}</h3>
+<p>{{ replicacao_previa.resultado.propostas|length }} novas aulas · {{ replicacao_previa.repetidas }} aulas idênticas já existentes, que serão preservadas. A cópia ainda não foi gravada.</p>
+<p>Confira cada semana abaixo no próprio quadro. A confirmação inclui todo o período, mesmo com um filtro ativo. A aprovação da semana modelo não será copiada.</p>
+<nav class="replica-semanas" aria-label="Semanas da replicação">{% for s in replicacao_semanas %}<a class="btn" href="{{ s.url }}">{{ s.inicio|date:'d/m' }}–{{ s.fim|date:'d/m' }} · {{ s.aulas }} aulas{% if s.pendentes %} · {{ s.pendentes }} pendentes{% endif %}</a>{% endfor %}</nav>
+{% if previa_desatualizada %}<p role="alert">Os dados mudaram. Descarte esta prévia e prepare novamente antes de confirmar.</p>{% else %}
+<form method="post" class="confirmar-replica">{% csrf_token %}<input type="hidden" name="acao" value="confirmar_replicacao"><input type="hidden" name="token" value="{{ replicacao_previa.token }}"><input type="hidden" name="data_grade" value="{{ data_grade }}"><label><input type="checkbox" name="revisado_replicacao" required> Revisei todas as semanas de {{ replicacao_inicio|date:'d/m/Y' }} a {{ replicacao_fim|date:'d/m/Y' }}.</label>
+{% if replicacao_previa.resultado.resumo.pendentes %}<label><input type="checkbox" name="aceitar_parcial_replicacao" required> Aceito copiar o período com {{ replicacao_previa.resultado.resumo.pendentes }} aulas pendentes de docente ou horário.</label>{% endif %}
+<button class="btn btn-aprovar" type="submit">Confirmar replicação do período</button></form>{% endif %}
+<form method="post">{% csrf_token %}<input type="hidden" name="acao" value="descartar_replicacao"><input type="hidden" name="data_grade" value="{{ data_grade }}"><button class="btn" type="submit">Descartar replicação</button></form>
+{% if replicacao_previa.resultado.avisos %}<details open><summary>Avisos da replicação</summary><ul>{% for a in replicacao_previa.resultado.avisos %}<li>{{ a }}</li>{% endfor %}</ul></details>{% endif %}
+</section>
+{% else %}
+<details class="replicar-grade" {% if replicacao_form.errors or erro_replicacao %}open{% endif %}><summary>Replicar uma grade semanal por um período</summary><p>Use uma semana já salva como modelo. A cópia inclui todas as unidades da semana, independentemente do filtro do quadro. Por padrão, a origem é a semana anterior. A última semana será incluída inteira, até domingo, mesmo quando terminar no mês seguinte. Feriados não retiram aulas.</p>
+<form method="post">{% csrf_token %}<input type="hidden" name="acao" value="replicar"><input type="hidden" name="data_grade" value="{{ data_grade }}">{{ replicacao_form.non_field_errors }}<div class="campos-replica">{% for campo in replicacao_form %}<div><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{{ campo.errors }}</div>{% endfor %}</div><button class="btn" type="submit">Preparar prévia da replicação</button></form>
+</details>
+{% endif %}

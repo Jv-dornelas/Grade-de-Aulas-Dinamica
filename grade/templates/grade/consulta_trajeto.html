@@ -1,0 +1,22 @@
+{% load l10n %}
+{% if unidade.pk %}
+<section style="border:1px solid #cbd5e1;border-radius:10px;padding:20px;margin-top:24px" aria-labelledby="titulo-mapas">
+<h2 id="titulo-mapas">Calcular trajeto pelos endereços</h2>
+<p>Salve os endereços completos das duas unidades antes de consultar. A consulta envia os endereços ao Nominatim/OpenStreetMap e as localizações ao servidor de rotas OSRM/FOSSGIS.</p>
+<p>Os resultados são estimativas rodoviárias de <strong>carro, sem trânsito em tempo real</strong>. Não representam automaticamente ônibus ou caminhada. Confira os pontos e tempos antes de aplicá-los à automação.</p>
+{% if mensagem_mapas %}<p role="status">{{ mensagem_mapas }}</p>{% endif %}
+<form method="post">{% csrf_token %}<input type="hidden" name="acao" value="consultar_trajeto">
+<label for="destino-mapas">Outra unidade</label><select name="destino" id="destino-mapas" required><option value="">Selecione</option>{% for d in destinos_mapas %}<option value="{{ d.pk }}">{{ d.nome }}</option>{% endfor %}</select>
+<button type="submit" class="btn btn-save" {% if not mapas_habilitado %}disabled{% endif %}>Consultar pelo endereço</button></form>
+{% if previa_trajeto %}
+<div style="background:#eff6ff;padding:18px;margin:16px 0" role="region" aria-label="Revisão do trajeto calculado">
+<h3>Confira a localização retornada</h3>
+<p>Origem: {{ previa_trajeto.origem.rotulo }} · <a target="_blank" rel="noopener noreferrer" href="https://www.openstreetmap.org/?mlat={{ previa_trajeto.origem.lat|unlocalize }}&amp;mlon={{ previa_trajeto.origem.lon|unlocalize }}">Ver no mapa</a></p>
+<p>Destino: {{ previa_trajeto.destino.rotulo }} · <a target="_blank" rel="noopener noreferrer" href="https://www.openstreetmap.org/?mlat={{ previa_trajeto.destino.lat|unlocalize }}&amp;mlon={{ previa_trajeto.destino.lon|unlocalize }}">Ver no mapa</a></p>
+<p><strong>Ida:</strong> {{ previa_trajeto.ida.km }} km / {{ previa_trajeto.ida.minutos }} min. <strong>Volta:</strong> {{ previa_trajeto.volta.km }} km / {{ previa_trajeto.volta.minutos }} min.</p>
+<form method="post">{% csrf_token %}<input type="hidden" name="acao" value="aplicar_trajeto"><input type="hidden" name="token" value="{{ previa_trajeto.token }}"><label><input type="checkbox" required name="conferido"> Conferi os locais e a adequação do tempo para os professores.</label><button type="submit" class="btn btn-save">Aplicar trajetos à automação</button></form>
+<p>Aplicar substitui os tempos de ida e volta desse par. Aulas existentes não são alteradas; prévias da grade precisarão ser geradas novamente.</p>
+</div>{% endif %}
+<small>Dados © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> (ODbL). Geocodificação: Nominatim. Rotas: <a href="https://routing.openstreetmap.de/about.html">OSRM/FOSSGIS</a>. <a href="https://www.openstreetmap.org/fixthemap">Corrigir o mapa</a>.</small>
+</section>
+{% endif %}

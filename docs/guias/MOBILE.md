@@ -55,7 +55,7 @@ A grade exige conexão. O aplicativo não guarda horários privados em cache. O 
 4. `grade/templates/grade/mobile/`: estrutura das telas com os dados do Django.
 5. `grade/static/grade/mobile/mobile.css`: aparência, adaptação ao celular e impressão.
 6. `grade/static/grade/mobile/mobile.js`: instalação e botão de impressão.
-7. `grade/tests.py`: testes de acesso, isolamento e exportação.
+7. `grade/tests/test_mobile.py`: testes de acesso, isolamento e exportação.
 
 Para executar os testes (usam um banco separado):
 
@@ -63,4 +63,4 @@ Para executar os testes (usam um banco separado):
 docker compose exec web python manage.py test grade
 ```
 
-O modelo atual não relaciona uma disciplina específica a cada alocação. A consulta mostra horário e unidade; não tenta deduzir a disciplina pelas habilitações do professor.
+As aulas curriculares atuais possuem turma, disciplina e demanda derivada do curso. Registros legados sem esses vínculos continuam preservados; a consulta não deduz a disciplina pelas habilitações do professor.

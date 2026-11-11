@@ -8,6 +8,7 @@ env/
 
 # Banco de dados local (para não vazar dados reais no GitHub)
 *.sqlite3
+*.sqlite3-*
 
 # Arquivos do Python / Cache
 __pycache__/
@@ -31,3 +32,10 @@ android-app/local.properties
 *.aab
 *.jks
 *.keystore
+
+# Artefatos e cópias locais, separados do código-fonte
+backups/*
+!backups/.gitkeep
+output/
+tmp/
+dist/

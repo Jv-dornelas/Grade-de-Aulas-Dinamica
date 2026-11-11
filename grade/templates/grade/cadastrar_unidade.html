@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -412,115 +413,13 @@
             }
         }
     </style>
+<link rel="stylesheet" href="{% static 'grade/navegacao.css' %}?v=20261110-3">
+<link rel="stylesheet" href="{% static 'grade/formularios.css' %}?v=20261111">
 </head>
 
-<body>
+<body class="pagina-cadastro">
 
-<header class="topbar">
-
-    <a href="{% url 'grade:exibir_grade' %}" class="brand">
-        Grade <span>CCM</span>
-    </a>
-
-    <nav class="menu">
-
-        <!-- HOME -->
-        <div class="menu-item">
-            <a href="{% url 'grade:exibir_grade' %}" class="menu-link">
-                🏠 Home
-            </a>
-        </div>
-
-        <!-- UNIDADE -->
-        <div class="menu-item">
-
-            <a href="#" class="menu-link">
-                Unidade ▾
-            </a>
-
-            <div class="dropdown">
-
-                <a href="{% url 'grade:cadastrar_unidade' %}">
-                    Cadastrar
-                </a>
-
-                <a href="{% url 'grade:atualizar_unidade' %}">
-                    Atualizar
-                </a>
-
-                <a href="{% url 'grade:excluir_unidade' %}">
-                    Excluir
-                </a>
-
-                <a href="{% url 'grade:lista_unidades' %}">
-                    Visualizar lista
-                </a>
-
-            </div>
-
-        </div>
-
-        <!-- PROFESSOR -->
-        <div class="menu-item">
-
-            <a href="#" class="menu-link">
-                Professor ▾
-            </a>
-
-            <div class="dropdown">
-
-                <a href="{% url 'grade:cadastrar_professor' %}">
-                    Cadastrar
-                </a>
-
-                <a href="{% url 'grade:atualizar_professor' %}">
-                    Atualizar
-                </a>
-
-                <a href="{% url 'grade:excluir_professor' %}">
-                    Excluir
-                </a>
-
-                <a href="{% url 'grade:lista_professores' %}">
-                    Visualizar lista
-                </a>
-
-            </div>
-
-        </div>
-
-        <!-- DISCIPLINA -->
-        <div class="menu-item">
-
-            <a href="#" class="menu-link">
-                Disciplina ▾
-            </a>
-
-            <div class="dropdown">
-
-                <a href="{% url 'grade:cadastrar_disciplina' %}">
-                    Cadastrar
-                </a>
-
-                <a href="{% url 'grade:atualizar_disciplina' %}">
-                    Atualizar
-                </a>
-
-                <a href="{% url 'grade:excluir_disciplina' %}">
-                    Excluir
-                </a>
-
-                <a href="{% url 'grade:lista_disciplinas' %}">
-                    Visualizar lista
-                </a>
-
-            </div>
-
-        </div>
-
-    </nav>
-
-</header>
+{% include 'grade/navegacao_principal.html' %}
 
 
 <main class="container">
@@ -546,7 +445,7 @@
 
         {% if sucesso %}
 
-            <div class="alert alert-success">
+            <div class="alert alert-success" role="status">
                 Unidade cadastrada com sucesso!
                 Você pode cadastrar outra unidade ou acessar
                 uma das opções do menu.
@@ -557,162 +456,14 @@
 
         {% if erro %}
 
-            <div class="alert alert-error">
+            <div class="alert alert-error" role="alert">
                 {{ erro }}
             </div>
 
         {% endif %}
 
 
-        <form method="POST">
-
-            {% csrf_token %}
-
-
-            <div class="form-section">
-
-                <div class="section-title">
-                    Informações da unidade
-                </div>
-
-                <div class="section-description">
-                    Informe os dados principais da unidade.
-                </div>
-
-
-                <div class="form-grid">
-
-                    <!-- NOME -->
-
-                    <div class="field">
-
-                        <label for="nome">
-                            Nome da unidade
-                            <span class="required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            id="nome"
-                            name="nome"
-                            maxlength="50"
-                            required
-                            placeholder="Ex.: DG"
-                        >
-
-                        <span class="help-text">
-                            Nome ou identificação utilizada no sistema.
-                        </span>
-
-                    </div>
-
-
-                    <!-- RESPONSÁVEL -->
-
-                    <div class="field">
-
-                        <label for="responsavel">
-                            Responsável
-                            <span class="required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            id="responsavel"
-                            name="responsavel"
-                            maxlength="100"
-                            required
-                            placeholder="Ex.: MEL"
-                        >
-
-                        <span class="help-text">
-                            Pessoa responsável pela unidade.
-                        </span>
-
-                    </div>
-
-
-                    <!-- ENDEREÇO -->
-
-                    <div class="field field-full">
-
-                        <label for="endereco">
-                            Endereço
-                        </label>
-
-                        <input
-                            type="text"
-                            id="endereco"
-                            name="endereco"
-                            maxlength="200"
-                            placeholder="Rua, número e bairro"
-                        >
-
-                    </div>
-
-
-                    <!-- CIDADE -->
-
-                    <div class="field">
-
-                        <label for="cidade">
-                            Cidade
-                        </label>
-
-                        <input
-                            type="text"
-                            id="cidade"
-                            name="cidade"
-                            maxlength="100"
-                            placeholder="Ex.: Suzano"
-                        >
-
-                    </div>
-
-
-                    <!-- CEP -->
-
-                    <div class="field">
-
-                        <label for="cep">
-                            CEP
-                        </label>
-
-                        <input
-                            type="text"
-                            id="cep"
-                            name="cep"
-                            maxlength="15"
-                            placeholder="Ex.: 08600-000"
-                        >
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="actions">
-
-                <a
-                    href="/"
-                    class="button button-secondary"
-                >
-                    Cancelar
-                </a>
-
-
-                <button
-                    type="submit"
-                    class="button button-primary"
-                >
-                    Cadastrar unidade
-                </button>
-
-            </div>
-
-        </form>
+        {% include 'grade/ficha_unidade_form.html' %}
 
     </section>
 

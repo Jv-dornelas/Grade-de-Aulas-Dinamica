@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -258,122 +259,13 @@
         }
 
     </style>
+<link rel="stylesheet" href="{% static 'grade/navegacao.css' %}?v=20261110-3">
+<link rel="stylesheet" href="{% static 'grade/formularios.css' %}?v=20261111">
 </head>
 
-<body>
+<body class="pagina-cadastro">
 
-    <header class="topbar">
-
-        <div class="brand">
-
-            <div class="brand-logo">
-                CM
-            </div>
-
-            <div class="brand-info">
-                <strong>Cursinho Chico Mendes</strong>
-                <span>Gestão da Grade de Aulas</span>
-            </div>
-
-        </div>
-
-        <nav class="menu-navegacao">
-
-            <!-- HOME -->
-            <a
-                href="{% url 'grade:exibir_grade' %}"
-                class="menu-item"
-            >
-                🏠 Home
-            </a>
-
-            <!-- PROFESSORES -->
-            <div class="menu-dropdown">
-
-                <span class="menu-item">
-                    Professor
-                    <span class="seta">▼</span>
-                </span>
-
-                <div class="dropdown-conteudo">
-                    <a href="{% url 'grade:cadastrar_professor' %}">
-                        Cadastrar
-                    </a>
-
-                    <a href="{% url 'grade:atualizar_professor' %}">
-                        Atualizar
-                    </a>
-
-                    <a href="{% url 'grade:excluir_professor' %}">
-                        Excluir
-                    </a>
-
-                    <a href="{% url 'grade:lista_professores' %}">
-                        Visualizar lista
-                    </a>
-                </div>
-
-            </div>
-
-            <!-- UNIDADES -->
-            <div class="menu-dropdown">
-
-                <span class="menu-item">
-                    Unidade
-                    <span class="seta">▼</span>
-                </span>
-
-                <div class="dropdown-conteudo">
-                    <a href="{% url 'grade:cadastrar_unidade' %}">
-                        Cadastrar
-                    </a>
-
-                    <a href="{% url 'grade:atualizar_unidade' %}">
-                        Atualizar
-                    </a>
-
-                    <a href="{% url 'grade:excluir_unidade' %}">
-                        Excluir
-                    </a>
-
-                    <a href="{% url 'grade:lista_unidades' %}">
-                        Visualizar lista
-                    </a>
-                </div>
-
-            </div>
-
-            <!-- DISCIPLINAS -->
-            <div class="menu-dropdown">
-
-                <span class="menu-item">
-                    Disciplina
-                    <span class="seta">▼</span>
-                </span>
-
-                <div class="dropdown-conteudo">
-                    <a href="{% url 'grade:cadastrar_disciplina' %}">
-                        Cadastrar
-                    </a>
-
-                    <a href="{% url 'grade:atualizar_disciplina' %}">
-                        Atualizar
-                    </a>
-
-                    <a href="{% url 'grade:excluir_disciplina' %}">
-                        Excluir
-                    </a>
-
-                    <a href="{% url 'grade:lista_disciplinas' %}">
-                        Visualizar lista
-                    </a>
-                </div>
-
-            </div>
-
-        </nav>
-
-    </header>
+    {% include 'grade/navegacao_principal.html' %}
 
     <main class="container">
 
@@ -389,7 +281,7 @@
 
         {% if erro %}
 
-            <div class="erro">
+            <div class="erro" role="alert">
                 {{ erro }}
             </div>
 

@@ -1,0 +1,5 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block titulo %}Cadastros{% endblock %} | Cursinho Chico Mendes</title><link rel="stylesheet" href="{% static 'grade/navegacao.css' %}?v=20261110-3"><link rel="stylesheet" href="{% static 'grade/cadastros.css' %}?v=20261110"><link rel="stylesheet" href="{% static 'grade/formularios.css' %}?v=20261111">
+</head>
+<body class="pagina-cadastro">{% include 'grade/navegacao_principal.html' %}<main class="cadastro-container">{% if erro %}<div class="erro aviso" role="alert">{{ erro }}</div>{% endif %}{% block conteudo %}{% endblock %}</main></body></html>

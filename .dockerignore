@@ -3,6 +3,14 @@ venv
 .gitignore
 __pycache__
 *.sqlite3
+*.sqlite3-*
 .env
 android-app
 dist
+backups
+output
+tmp
+.venv
+.vscode
+.idea
+docs/der-renderizado

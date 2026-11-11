@@ -1,0 +1,17 @@
+{% if erro_editor %}<div class="semana-aviso erro" role="alert">{{ erro_editor }}</div>{% endif %}
+{% if aula_form %}
+<section id="editor-aula" class="editor-aula" aria-labelledby="titulo-editor" tabindex="-1">
+    <div class="grupo-heading"><h3 id="titulo-editor">{% if editor_proposta %}Ajustar aula da prévia{% elif aula_editor.pk %}Editar aula salva{% else %}Adicionar aula à grade{% endif %}</h3><a href="{{ url_fechar_editor }}">Fechar editor</a></div>
+    <form method="post" id="form-aula">
+        {% csrf_token %}<input type="hidden" name="acao" value="salvar_aula">
+        <input type="hidden" name="visao" value="{{ visao }}"><input type="hidden" name="por" value="{{ por }}"><input type="hidden" name="entidade" value="{{ entidade }}">
+        {% if editor_proposta %}<input type="hidden" name="proposta" value="{{ indice_editor }}"><input type="hidden" name="token" value="{{ previa.token }}">
+        {% elif aula_editor.pk %}<input type="hidden" name="editar" value="{{ aula_editor.pk }}"><input type="hidden" name="estado" value="{{ estado_editor }}">
+        {% else %}<input type="hidden" name="nova" value="1"><input type="hidden" name="estado" value="{{ estado_editor }}">{% endif %}
+        {{ aula_form.non_field_errors }}
+        <div class="campos-aula">{% for campo in aula_form %}<div><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{{ campo.errors }}{% if campo.help_text %}<small>{{ campo.help_text }}</small>{% endif %}</div>{% endfor %}</div>
+        <p>{% if editor_proposta %}Este ajuste muda apenas a prévia. Turma e disciplina são preservadas. A confirmação continua necessária para gravar a semana.{% else %}Salvar altera esta aula, preservando os vínculos curriculares. Disponibilidade, conflitos, carga semanal e deslocamento são validados antes de gravar.{% endif %}</p>
+        <button class="btn btn-primary" type="submit">{% if editor_proposta %}Aplicar ajuste à prévia{% else %}Salvar aula{% endif %}</button>
+    </form>
+</section>
+{% endif %}

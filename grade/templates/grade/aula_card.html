@@ -1,0 +1,10 @@
+<article class="aula-grade {% if aula.sem_professor %}aula-sem-professor{% elif aula.proposta %}aula-proposta{% else %}aula-salva{% endif %}" data-origem="{% if aula.proposta %}proposta{% elif aula.id %}salva{% else %}curriculo{% endif %}">
+                            {% if aula.proposta %}<span class="estado-aula">Prévia</span>{% endif %}
+                            <strong>{{ aula.disciplina.nome|default:'Aula legada' }}</strong>
+                            <span>{% if aula.sem_professor %}<strong>Sem professor</strong>{% else %}{{ aula.professor.nome|default:'Cadastro indisponível' }}{% endif %}</span>
+                            <span>{{ aula.turma.nome|default:'Sem turma vinculada' }}</span>
+                            <small>{% if aula.sala %}{{ aula.sala.nome }}{% else %}Sem sala · reserva a unidade{% endif %}</small>
+                            <small>{{ aula.unidade.nome }} · {{ aula.curso.nome|default:'Sem curso vinculado' }}</small>
+                            {% if aula.sem_professor %}<small class="motivo-pendencia">{{ aula.motivo_pendencia|default:'Docente ainda não atribuído. Confira as pendências antes de aprovar.' }}</small>{% endif %}
+                            <a class="editar-aula" href="{{ aula.url_editar }}">{% if aula.sem_professor %}Definir professor{% elif aula.proposta %}Ajustar{% else %}Editar{% endif %}</a>
+                        </article>

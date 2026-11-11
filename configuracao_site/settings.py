@@ -50,6 +50,8 @@ INSTALLED_APPS = [
 ]
 
 
+CSRF_FAILURE_VIEW = 'grade.erros_acesso.csrf_falhou'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -86,7 +88,7 @@ WSGI_APPLICATION = 'configuracao_site.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / os.environ.get('SQLITE_NAME', 'db.sqlite3'),
     }
 }
 
@@ -126,4 +128,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Preserva o tipo de chave usado pelas migrações existentes.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Sem SMTP configurado, mensagens são simuladas em arquivos locais.
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.filebased.EmailBackend')
+EMAIL_FILE_PATH = BASE_DIR / 'tmp' / 'emails'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1') == '1'
+EMAIL_TIMEOUT = 10
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'grade@localhost')
+GRADE_URL_PUBLICA = os.environ.get('GRADE_URL_PUBLICA', 'http://localhost:8000').rstrip('/')
+
+# 08:00–11:20, almoço de uma hora, 12:20–15:40; aulas de 50 minutos.
+GRADE_AULAS_POR_TURNO = 4
+GRADE_PROXIMIDADE_PARENTESCO_MINUTOS = int(os.environ.get('GRADE_PROXIMIDADE_PARENTESCO_MINUTOS', '15'))
+
+# Consulta sob demanda, habilitada por padrão somente na cópia local autorizada.
+GRADE_MAPAS_HABILITADO = os.environ.get('GRADE_MAPAS_HABILITADO',
+    '1' if Path(DATABASES['default']['NAME']).name == 'db.automacao.sqlite3' else '0') == '1'
+GRADE_GEOCODER_URL = os.environ.get('GRADE_GEOCODER_URL', 'https://nominatim.openstreetmap.org/search')
+GRADE_ROTAS_URL = os.environ.get('GRADE_ROTAS_URL', 'https://routing.openstreetmap.de/routed-car/route/v1/driving')
+GRADE_MAPAS_USER_AGENT = 'GradeAulasDinamicaLocal/1.0 (https://github.com/Jv-dornelas/Grade-de-Aulas-Dinamica)'
 

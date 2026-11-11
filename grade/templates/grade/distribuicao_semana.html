@@ -1,0 +1,129 @@
+<section class="distribuicao-semana" aria-labelledby="titulo-distribuicao">
+    <div class="semana-heading">
+        <div>
+            <p class="semana-eyebrow">DISTRIBUIÇÃO DE AULAS</p>
+            <h2 id="titulo-distribuicao">{% if visao == 'dia' %}{{ dia_distribuicao|date:'l, d M Y' }}{% else %}{{ inicio_distribuicao|date:'d M' }} — {{ fim_distribuicao|date:'d M Y' }}{% endif %}</h2>
+            <p>Edite as aulas no próprio quadro ou gere a distribuição automaticamente.</p>
+        </div>
+        <nav class="semana-navegacao" aria-label="Navegação semanal">
+            <a class="btn" href="{{ url_anterior }}" aria-label="{% if visao == 'dia' %}Dia anterior{% else %}Semana anterior{% endif %}">←</a>
+            <a class="btn" href="{% url 'grade:exibir_grade' %}?por={{ por }}&amp;entidade={{ entidade }}&amp;visao={{ visao }}">Hoje</a>
+            <a class="btn" href="{{ url_proxima }}" aria-label="{% if visao == 'dia' %}Próximo dia{% else %}Próxima semana{% endif %}">→</a>
+        </nav>
+    </div>
+
+    {% if por == 'unidade' %}<div class="visao-unidade"><nav class="modos-grade" aria-label="Per?odo da unidade"><a href="{{ url_visao_dia }}" {% if visao == 'dia' %}aria-current="true"{% endif %}>Dia ? turmas lado a lado</a><a href="{{ url_visao_semana }}" {% if visao == 'semana' %}aria-current="true"{% endif %}>Semana</a></nav><nav class="dias-unidade" aria-label="Dias da semana">{% for d in dias_navegacao %}<a class="btn" href="{{ d.url }}" {% if d.data == dia_distribuicao %}aria-current="date"{% endif %}>{{ d.data|date:'D d/m' }}</a>{% endfor %}</nav></div>{% endif %}
+    <div class="semana-ferramentas">
+        <nav class="modos-grade" aria-label="Visualizar distribuição por">
+            {% for modo in modos_distribuicao %}
+            <a href="{{ modo.url }}" {% if por == modo.valor %}aria-current="true"{% endif %}>{{ modo.nome }}</a>
+            {% endfor %}
+        </nav>
+        <form method="get" class="filtro-grade">
+            <input type="hidden" name="data" value="{{ data_grade }}">
+            <input type="hidden" name="visao" value="{{ visao }}"><input type="hidden" name="por" value="{{ por }}">
+            <label for="entidade-grade">{{ nome_modo }}</label>
+            <select id="entidade-grade" name="entidade">
+                <option value="">Todas as opções</option>
+                {% for opcao in opcoes_distribuicao %}
+                <option value="{{ opcao.pk }}" {% if entidade == opcao.pk|stringformat:'s' %}selected{% endif %}>{{ opcao }}</option>
+                {% endfor %}
+                {% if por == 'curso' or por == 'turma' %}<option value="legado" {% if entidade == 'legado' %}selected{% endif %}>Sem vínculo / legado</option>{% endif %}
+                {% if por == 'professor' %}<option value="legado" {% if entidade == 'legado' %}selected{% endif %}>Sem professor</option>{% endif %}
+            </select>
+            <button class="btn" type="submit">Filtrar</button>
+        </form>
+    </div>
+
+    <div class="semana-resumo">
+        <span><i class="indicador-salva"></i> {{ total_salvas }} aulas salvas</span>
+        <span><i class="indicador-previa"></i> {{ total_propostas }} propostas nesta semana</span>
+        {% if total_sem_professor %}<span>{{ total_sem_professor }} horários de matérias sem professor</span>{% endif %}
+        {% if entidade %}<span>{{ total_visivel }} de {{ total_sem_filtro }} aulas neste filtro · <a href="{{ url_sem_filtro }}">Mostrar todas</a></span>{% endif %}
+    </div>
+    {% include 'grade/estado_grade.html' %}
+    {% include 'grade/revisao_aprovacao.html' %}
+
+    <form method="post" id="gerar-integrado" class="gerar-integrado">
+        {% csrf_token %}
+        <input type="hidden" name="acao" value="gerar">
+        <input type="hidden" name="semana" value="{{ inicio_distribuicao|date:'Y-m-d' }}">
+        <input type="hidden" name="data_grade" value="{{ data_grade }}">
+        <input type="hidden" name="visao" value="{{ visao }}"><input type="hidden" name="por" value="{{ por }}">
+        <input type="hidden" name="entidade" value="{{ entidade }}">
+        <input type="hidden" name="proximidade" value="{{ proximidade_admin }}">
+        {{ form.errors }}
+        <p id="geracao-andamento" role="status" hidden>Calculando a semana. Aguarde…</p>
+    </form>
+
+    {% include 'grade/replicacao.html' %}
+    {% for message in messages %}<div class="semana-aviso {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
+    {% if erro %}<div class="semana-aviso erro" role="alert">{{ erro }}</div>{% endif %}
+    {% if previa and not replicacao_previa %}
+    <div class="previa-integrada" role="region" aria-label="Revisão da proposta">
+        <div>
+            <strong>{% if previa_desatualizada %}Prévia desatualizada{% else %}{{ status_texto }}{% endif %}</strong>
+            <p>Semana de {{ inicio|date:'d/m/Y' }} · {{ linhas|length }} novas aulas · {{ resultado.resumo.pendentes|default:0 }} pendentes.</p>
+            {% if not previa_visivel and not previa_desatualizada %}<a class="btn" href="{{ url_semana_previa }}">Voltar à semana da proposta</a>{% endif %}
+        </div>
+        <div class="previa-acoes">
+            {% if pode_salvar and previa_visivel %}
+            <form method="post" id="aprovar-integrado">
+                {% csrf_token %}
+
+                <input type="hidden" name="acao" value="salvar">
+                <input type="hidden" name="token" value="{{ previa.token }}">
+                <input type="hidden" name="data_grade" value="{{ data_grade }}">
+                <input type="hidden" name="visao" value="{{ visao }}"><input type="hidden" name="por" value="{{ por }}">
+                <input type="hidden" name="entidade" value="{{ entidade }}">
+                {% if resultado.resumo.pendentes %}<label class="aceite-parcial"><input type="checkbox" name="aceitar_parcial" required> Revisei as pendências e aceito salvar a proposta parcial.</label>{% endif %}
+                {% if entidade %}<p>A confirmação inclui todas as {{ linhas|length }} aulas propostas, inclusive fora do filtro atual.</p>{% endif %}
+                <button type="submit" class="btn">Salvar sem aprovar</button>
+                <button type="submit" name="registrar_aprovacao" value="on" class="btn btn-aprovar">Aprovar e gravar prévia · {{ linhas|length }} aulas</button>
+            </form>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="acao" value="descartar">
+                <input type="hidden" name="data_grade" value="{{ data_grade }}">
+                <input type="hidden" name="visao" value="{{ visao }}"><input type="hidden" name="por" value="{{ por }}">
+                <input type="hidden" name="entidade" value="{{ entidade }}">
+                <button class="btn" type="submit">Descartar prévia</button>
+            </form>
+        </div>
+        {% if resultado.pendencias %}<details class="pendencias-grade" open><summary>Pendências da distribuição</summary><ul>{% for item in resultado.pendencias %}<li>{{ item }}</li>{% endfor %}</ul></details>{% endif %}
+        {% if resultado.avisos %}<details class="pendencias-grade" open><summary>Avisos de parentesco e preferências</summary><ul>{% for item in resultado.avisos %}<li>{{ item }}</li>{% endfor %}</ul></details>{% endif %}
+    </div>
+    {% endif %}
+
+    {% include 'grade/editor_aula.html' %}
+    <div class="acoes-grade"><a class="btn" href="{{ url_nova_aula }}">+ Adicionar aula</a><a class="btn" href="{% url 'grade:turmas' %}">Configuração das turmas</a><span>“Sem aula”: nenhum registro neste horário. No modo fixo opcional, “Sem professor” indica matéria definida ainda sem docente.</span></div>
+    {% if por == 'unidade' and visao == 'dia' %}
+        {% include 'grade/unidade_dia.html' %}
+    {% else %}
+    {% for grupo in distribuicao %}
+    <section class="grupo-distribuicao" aria-label="{{ nome_modo }}: {{ grupo.nome }}">
+        <div class="grupo-heading"><h3>{{ grupo.nome }}</h3><span>{{ grupo.quantidade }} aulas</span></div>
+        <div class="semana-scroll" tabindex="0" role="region" aria-label="Horários de {{ grupo.nome }}. Role horizontalmente em telas menores.">
+            <table class="tabela-semana">
+                <caption class="sr-only">Distribuição semanal por {{ nome_modo }}: {{ grupo.nome }}</caption>
+                <thead><tr><th scope="col">Horário</th>{% for dia in dias_distribuicao %}<th scope="col" {% if dia|date:'Y-m-d' == data_grade %}aria-current="date"{% endif %}><a href="?data={{ dia|date:'Y-m-d' }}&amp;por={{ por }}&amp;entidade={{ entidade }}">{{ dia|date:'D' }}<span>{{ dia|date:'d/m' }}</span></a></th>{% endfor %}</tr></thead>
+                <tbody>
+                {% for linha in grupo.linhas %}
+                    {% if linha.horario.hora_inicio == jornada.inicio_tarde %}<tr class="almoco-grade"><td colspan="8">Almoço · {{ jornada.fim_manha|time:'H:i' }}–{{ jornada.inicio_tarde|time:'H:i' }}</td></tr>{% endif %}
+                    <tr><th scope="row">{{ linha.horario.hora_inicio|time:'H:i' }}<span>{{ linha.horario.hora_fim|time:'H:i' }}</span></th>
+                    {% for celula in linha.celulas_edicao %}<td>
+                        {% for aula in celula.aulas %}
+                        {% include 'grade/aula_card.html' %}
+                        {% empty %}<a class="adicionar-celula" href="{{ celula.url_nova }}" aria-label="Sem aula. Adicionar em {{ celula.data|date:'d/m/Y' }} às {{ linha.horario.hora_inicio|time:'H:i' }}">+<small>Sem aula</small></a>{% endfor %}
+                    </td>{% endfor %}</tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% empty %}
+    <div class="semana-vazia"><h3>{% if entidade %}Nenhuma aula neste filtro{% else %}A semana está livre{% endif %}</h3><p>{% if entidade %}O filtro não altera a grade nem descarta a proposta. Selecione outra opção ou mostre todas as aulas.{% else %}Use Adicionar aula ou Gerar grade para preencher este mesmo quadro.{% endif %}</p></div>
+    {% endfor %}
+    {% endif %}
+</section>

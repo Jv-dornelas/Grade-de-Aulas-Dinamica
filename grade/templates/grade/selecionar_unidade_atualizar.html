@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -330,115 +331,13 @@
             }
         }
     </style>
+<link rel="stylesheet" href="{% static 'grade/navegacao.css' %}?v=20261110-3">
+<link rel="stylesheet" href="{% static 'grade/formularios.css' %}?v=20261111">
 </head>
 
-<body>
+<body class="pagina-cadastro">
 
-<header class="topbar">
-
-    <a href="{% url 'grade:exibir_grade' %}" class="brand">
-        Grade <span>CCM</span>
-    </a>
-
-    <nav class="menu">
-
-        <!-- HOME -->
-        <div class="menu-item">
-            <a href="{% url 'grade:exibir_grade' %}" class="menu-link">
-                🏠 Home
-            </a>
-        </div>
-
-        <!-- UNIDADE -->
-        <div class="menu-item">
-
-            <a href="#" class="menu-link">
-                Unidade ▾
-            </a>
-
-            <div class="dropdown">
-
-                <a href="{% url 'grade:cadastrar_unidade' %}">
-                    Cadastrar
-                </a>
-
-                <a href="{% url 'grade:atualizar_unidade' %}">
-                    Atualizar
-                </a>
-
-                <a href="{% url 'grade:excluir_unidade' %}">
-                    Excluir
-                </a>
-
-                <a href="{% url 'grade:lista_unidades' %}">
-                    Visualizar lista
-                </a>
-
-            </div>
-
-        </div>
-
-        <!-- PROFESSOR -->
-        <div class="menu-item">
-
-            <a href="#" class="menu-link">
-                Professor ▾
-            </a>
-
-            <div class="dropdown">
-
-                <a href="{% url 'grade:cadastrar_professor' %}">
-                    Cadastrar
-                </a>
-
-                <a href="{% url 'grade:atualizar_professor' %}">
-                    Atualizar
-                </a>
-
-                <a href="{% url 'grade:excluir_professor' %}">
-                    Excluir
-                </a>
-
-                <a href="{% url 'grade:lista_professores' %}">
-                    Visualizar lista
-                </a>
-
-            </div>
-
-        </div>
-
-        <!-- DISCIPLINA -->
-        <div class="menu-item">
-
-            <a href="#" class="menu-link">
-                Disciplina ▾
-            </a>
-
-            <div class="dropdown">
-
-                <a href="{% url 'grade:cadastrar_disciplina' %}">
-                    Cadastrar
-                </a>
-
-                <a href="{% url 'grade:atualizar_disciplina' %}">
-                    Atualizar
-                </a>
-
-                <a href="{% url 'grade:excluir_disciplina' %}">
-                    Excluir
-                </a>
-
-                <a href="{% url 'grade:lista_disciplinas' %}">
-                    Visualizar lista
-                </a>
-
-            </div>
-
-        </div>
-
-    </nav>
-
-</header>
+{% include 'grade/navegacao_principal.html' %}
 
 
 <main class="container">

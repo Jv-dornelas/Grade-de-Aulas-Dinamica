@@ -1,0 +1,22 @@
+{% if revisar_aprovacao %}
+<section id="revisao-aprovacao" class="revisao-aprovacao" aria-labelledby="titulo-aprovar">
+<h2 id="titulo-aprovar">Aprovar grade da semana · {{ inicio_distribuicao|date:'d/m/Y' }} a {{ fim_distribuicao|date:'d/m/Y' }}</h2>
+<p>A aprovação considera <strong>a semana inteira, em todas as unidades</strong>, mesmo que o quadro esteja filtrado. Não altera aulas ou professores.</p>
+{% if erro_aprovacao %}<p class="semana-aviso erro" role="alert">{{ erro_aprovacao }}</p>{% endif %}
+{% if aprovacao_vigente %}<p class="semana-aviso success">Esta versão foi aprovada em {{ aprovacao_vigente.aprovado_em|date:'d/m/Y H:i' }} por {{ aprovacao_vigente.aprovado_por|default:'usuário removido' }}{% if aprovacao_vigente.parcial %}, com pendências aceitas{% endif %}.</p>{% endif %}
+<p><strong>{{ resumo_aprovacao.distribuidas }}/{{ resumo_aprovacao.carga }} aulas distribuídas · {{ resumo_aprovacao.com_docente }} com professor · {{ resumo_aprovacao.sem_docente }} sem professor · {{ resumo_aprovacao.sem_horario }} sem horário</strong></p>
+<p>Ao aprovar uma nova versão, o sistema prepara avisos individuais por e-mail para os professores cuja grade mudou. Em modo local, o envio é simulado.</p>
+{% if avisos_email %}<details><summary>Avisos por e-mail desta aprovação</summary><ul>{% for aviso in avisos_email %}<li>{{ aviso.professor.nome }}: {{ aviso.estado }}{% if aviso.estado == 'sem_email' %} — preencha o e-mail no cadastro do professor{% endif %}</li>{% endfor %}</ul></details>{% endif %}
+{% if resumo_aprovacao.erros %}<div class="semana-aviso erro"><strong>Corrija antes de aprovar:</strong><ul>{% for e in resumo_aprovacao.erros %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+{% if resumo_aprovacao.faltas %}<details open><summary>Pendências da semana</summary><ul>{% for f in resumo_aprovacao.faltas %}<li>{{ f.demanda.turma }} · {{ f.demanda.disciplina.nome }}: {{ f.quantidade }} aula(s).</li>{% endfor %}</ul></details>{% endif %}
+{% if resumo_aprovacao.avisos %}<div class="semana-aviso"><ul>{% for a in resumo_aprovacao.avisos %}<li>{{ a }}</li>{% endfor %}</ul></div>{% endif %}
+{% if previa_bloqueia_aprovacao %}<p>Há uma prévia aberta. Use a ação de aprovar e gravar essa proposta, ou descarte-a primeiro.</p>
+{% elif not resumo_aprovacao.total %}<p>Ainda não há aulas para aprovar. Gere uma prévia ou adicione aulas ao quadro.</p>
+{% elif not resumo_aprovacao.erros and not aprovacao_vigente %}
+<form method="post">{% csrf_token %}<input type="hidden" name="acao" value="aprovar_grade"><input type="hidden" name="data_grade" value="{{ data_grade }}"><input type="hidden" name="por" value="{{ por }}"><input type="hidden" name="entidade" value="{{ entidade }}"><input type="hidden" name="assinatura" value="{{ assinatura_aprovacao }}">
+<label><input type="checkbox" name="revisado" required> Revisei a distribuição de toda a semana.</label>
+{% if resumo_aprovacao.pendentes %}<label style="display:block;margin:14px 0"><input type="checkbox" name="aceitar_parcial_aprovacao" required> Aceito aprovar esta semana parcial com as pendências listadas.</label>{% endif %}
+<button class="btn btn-aprovar" type="submit">Confirmar aprovação da grade</button>
+</form>{% endif %}
+</section>
+{% endif %}

@@ -1,0 +1,188 @@
+:root {
+            --navy: #0F172A;
+            --navy-light: #1E293B;
+            --blue: #1E40AF;
+            --sky: #0284C7;
+
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+
+            --border: #E2E8F0;
+            --text: #0F172A;
+            --muted: #64748B;
+
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+            --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        /* =========================
+        HEADER
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 36px;
+            gap: 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 290px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .brand-info strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .brand-info span {
+            display: block;
+            margin-top: 3px;
+            color: #CBD5E1;
+            font-size: 12px;
+        }
+
+        /* =========================
+        NAVEGAÇÃO
+        ========================= */
+
+        .menu-navegacao {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .menu-dropdown {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item {
+            display: inline-flex;
+            align-items: center;
+            height: 42px;
+            padding: 0 18px;
+            border-radius: 8px;
+            color: #E2E8F0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.15s ease, color 0.15s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--navy-light);
+            color: white;
+        }
+
+        /* =========================
+        DROPDOWN
+        ========================= */
+
+        .dropdown-conteudo {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 190px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+            padding: 7px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .menu-dropdown:hover .dropdown-conteudo {
+            display: block;
+        }
+
+        .dropdown-conteudo a {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.15s ease;
+        }
+
+        .dropdown-conteudo a:hover {
+            background: #EFF6FF;
+            color: var(--blue);
+        }
+
+        /* =========================
+        STATUS
+        ========================= */
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #CBD5E1;
+            font-size: 13px;
+            margin-left: auto;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+
+
+
+.menu-item{border:0;background:transparent;font-family:inherit}.menu-dropdown:focus-within .dropdown-conteudo{display:block}.menu-item:focus-visible,.dropdown-conteudo a:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}
+.topbar{height:66px;padding:0 24px;gap:24px}.topbar .brand{min-width:0;flex-shrink:0;gap:10px}.topbar .brand-logo{width:38px;height:38px;flex-shrink:0}.topbar .brand-info strong{font-size:14px;white-space:nowrap}.topbar .brand-info span{font-size:11px;white-space:nowrap}.topbar .menu-navegacao{margin-left:auto;gap:2px;flex-shrink:0}.topbar .menu-item{height:38px;padding:0 12px;font-size:13px;white-space:nowrap;gap:6px;flex-shrink:0}.topbar .seta{font-size:9px;color:#94a3b8}.topbar .status{font-size:11px;white-space:nowrap;flex-shrink:0;gap:6px}.topbar .status-dot{flex-shrink:0;width:6px;height:6px}
+@media(max-width:1350px){.topbar .status{display:none}}
+@media(max-width:1050px){.topbar{height:auto;min-height:66px;flex-wrap:wrap;padding:14px 20px;gap:10px}.topbar .menu-navegacao{width:100%;height:auto;margin-left:0;flex-wrap:wrap;gap:4px}.topbar .menu-dropdown{height:38px}.topbar .menu-item{padding:0 10px}.topbar .dropdown-conteudo{top:100%;max-width:calc(100vw - 32px)}}
+@media(max-width:550px){.topbar{padding:12px 16px}.topbar .menu-item{font-size:12px;padding:0 9px}.topbar .menu-dropdown:last-child .dropdown-conteudo{left:auto;right:0}}
+
+.topbar .brand{color:#fff;letter-spacing:normal}.topbar form{margin:0;width:auto;display:block}.topbar .menu-item{background:transparent;border:0;line-height:normal;text-align:left;width:auto;margin:0;box-shadow:none;text-transform:none;letter-spacing:normal}.topbar .menu-item:hover{background:#1e293b;color:white}

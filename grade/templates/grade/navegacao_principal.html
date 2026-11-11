@@ -1,0 +1,152 @@
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            CM
+        </div>
+
+        <div class="brand-info">
+            <strong>Cursinho Chico Mendes</strong>
+            <span>Gestão da Grade de Aulas</span>
+        </div>
+
+    </div>
+
+
+    <nav class="menu-navegacao" aria-label="Navegação principal">
+
+        <!-- HOME -->
+        <a
+            href="{% url 'grade:inicio' %}"
+            class="menu-item"
+        >
+            🏠 Home
+        </a>
+        <a href="{% url 'grade:exibir_grade' %}" class="menu-item">Grade horária</a>
+
+
+        <!-- PROFESSORES -->
+        <div class="menu-dropdown">
+
+            <button type="button" class="menu-item">
+                Professor
+                <span class="seta">▼</span>
+            </button>
+
+            <div class="dropdown-conteudo">
+
+                <a href="{% url 'grade:cadastrar_professor' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_professor' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_professor' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_professores' %}">
+                    Visualizar lista
+                </a>
+                <a href="{% url 'grade:restricoes_horario' %}">Restrições por horário</a>
+                <a href="{% url 'grade:configuracoes' %}">Critérios da automação</a>
+
+            </div>
+
+        </div>
+
+
+        <!-- UNIDADES -->
+        <div class="menu-dropdown">
+
+            <button type="button" class="menu-item">
+                Unidade
+                <span class="seta">▼</span>
+            </button>
+
+            <div class="dropdown-conteudo">
+
+                <a href="{% url 'grade:cadastrar_unidade' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_unidade' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_unidade' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_unidades' %}">
+                    Visualizar lista
+                </a>
+                <a href="{% url 'grade:salas' %}">Salas</a>
+
+            </div>
+
+        </div>
+
+
+        <!-- DISCIPLINAS -->
+        <div class="menu-dropdown">
+
+            <button type="button" class="menu-item">
+                Disciplina
+                <span class="seta">▼</span>
+            </button>
+
+            <div class="dropdown-conteudo">
+
+                <a href="{% url 'grade:cadastrar_disciplina' %}">
+                    Cadastrar
+                </a>
+
+                <a href="{% url 'grade:atualizar_disciplina' %}">
+                    Atualizar
+                </a>
+
+                <a href="{% url 'grade:excluir_disciplina' %}">
+                    Excluir
+                </a>
+
+                <a href="{% url 'grade:lista_disciplinas' %}">
+                    Visualizar lista
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="menu-dropdown">
+            <button type="button" class="menu-item">Turma <span class="seta">▼</span></button>
+            <div class="dropdown-conteudo">
+                <a href="{% url 'grade:turmas' %}">Cadastrar turma</a>
+                <a href="{% url 'grade:turmas' %}#lista-turmas">Visualizar e atualizar</a>
+            </div>
+        </div>
+        <div class="menu-dropdown">
+            <button type="button" class="menu-item">Curso <span class="seta">▼</span></button>
+            <div class="dropdown-conteudo">
+                <a href="{% url 'grade:cursos' %}">Cadastrar curso</a>
+                <a href="{% url 'grade:cursos' %}#lista-cursos">Cursos e matriz</a>
+            </div>
+        </div>
+        <form method="post" action="{% url 'grade:sair' %}" style="margin:0">
+            {% csrf_token %}<button type="submit" class="menu-item">Sair</button>
+        </form>
+    </nav>
+
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        Sistema ativo
+
+    </div>
+
+</header>

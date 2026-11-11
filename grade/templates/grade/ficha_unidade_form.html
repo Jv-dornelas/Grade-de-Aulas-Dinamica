@@ -1,0 +1,16 @@
+<form method="post">
+    {% csrf_token %}
+    <div class="form-grid">{{ form_unidade.as_p }}</div>
+    <h2 style="margin-top:24px">Salas da unidade</h2>
+    {% if form_unidade.instance.pk %}<ul>{% for s in form_unidade.instance.salas.all %}<li>{{ s.nome }} · {% if s.ativa %}Ativa{% else %}Inativa{% endif %}</li>{% empty %}<li>Nenhuma sala cadastrada: permanece a ocupação conservadora de uma aula por unidade.</li>{% endfor %}</ul><p><a href="{% url 'grade:salas' %}?unidade={{ form_unidade.instance.pk }}">Gerenciar salas desta unidade</a></p>{% else %}<p>Salve a unidade para cadastrar suas salas.</p>{% endif %}
+    <h2 style="margin-top:24px">Cursos e turmas desta unidade</h2>
+    <ul>{% for t in turmas_unidade %}<li>{{ t.curso|default:'Sem curso vinculado' }} · {{ t.nome }} · <a href="{% url 'grade:materias_turma' t.pk %}">Horários fixos das matérias</a></li>{% empty %}<li>Nenhuma turma vinculada. Vincule o curso ao cadastrar uma turma nesta unidade.</li>{% endfor %}</ul>
+    <h2 style="margin-top:24px">Trajetos entre esta unidade e as demais</h2>
+    <p>Cadastre uma vez os tempos de ida e volta. A automação consulta estes dados automaticamente. Distâncias em km são opcionais; nenhum tempo é estimado por velocidade. Um campo vazio não apaga um trajeto existente. Sem trajeto conhecido, o professor não é deslocado entre essas unidades.</p>
+    {{ trajetos.management_form }}{{ trajetos.non_form_errors }}
+    <div style="overflow-x:auto"><table style="width:100%;margin:20px 0;border-spacing:10px"><thead><tr><th>Outra unidade</th><th>Ida (min)</th><th>Volta (min)</th><th>Ida (km)</th><th>Volta (km)</th></tr></thead><tbody>
+    {% for t in trajetos %}<tr><td>{{ t.destino }}{{ t.destino.errors }}</td><td>{{ t.ida }}{{ t.ida.errors }}</td><td>{{ t.volta }}{{ t.volta.errors }}</td><td>{{ t.km_ida }}{{ t.km_ida.errors }}</td><td>{{ t.km_volta }}{{ t.km_volta.errors }}</td></tr>{% endfor %}
+    </tbody></table></div>
+    <button type="submit" class="btn btn-save">Salvar cadastro e trajetos</button>
+</form>
+{% load l10n %}{% include 'grade/consulta_trajeto.html' %}

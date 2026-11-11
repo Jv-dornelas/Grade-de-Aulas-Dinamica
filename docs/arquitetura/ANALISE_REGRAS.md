@@ -1,5 +1,7 @@
 # 📋 ANÁLISE DE CONFORMIDADE DAS REGRAS DE NEGÓCIO
 
+> **Documento histórico.** As afirmações abaixo descrevem uma análise antiga e não são a especificação atual. A revisão de setembro de 2026 encontrou verificações que não eram chamadas no salvamento. As regras implementadas e seus limites estão em [AUTOMACAO.md](AUTOMACAO.md), com regressões em `grade/test_restricoes.py`, `grade/test_gerador.py` e `grade/test_automacao.py`.
+
 ## ✅ REGRAS IMPLEMENTADAS (Funcionando)
 
 ### 1. ✅ Professores relacionados por parentesco no mesmo turno/unidade

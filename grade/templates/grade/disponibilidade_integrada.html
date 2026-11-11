@@ -1,0 +1,13 @@
+{% load grade_extras %}
+<details class="disponibilidade-integrada" {% if erro_negocio and request.POST.acao == 'salvar_disponibilidade' %}open{% endif %}>
+    <summary>Disponibilidade dos professores · {{ data_grade }}</summary>
+    <p>Por padrão, os professores podem trabalhar em qualquer data. Use estes campos apenas para registrar restrições no dia selecionado. <a href="{% url 'grade:restricoes_horario' %}">Gerenciar exceções por horário específico</a>.</p>
+    <form method="post">
+        {% csrf_token %}<input type="hidden" name="acao" value="salvar_disponibilidade"><input type="hidden" name="data_grade" value="{{ data_grade }}"><input type="hidden" name="assinatura" value="{{ assinatura_disponibilidade }}">
+        <fieldset {% if previa %}disabled{% endif %} style="border:0;padding:0">
+        {% if previa %}<p>Confirme ou descarte a prévia para alterar disponibilidades.</p>{% endif %}
+        <table><thead><tr><th>Professor</th><th>Manhã</th><th>Tarde</th></tr></thead><tbody>
+        {% for p in professores %}<tr><td>{{ p.nome }}</td><td><input type="checkbox" aria-label="{{ p.nome }} disponível pela manhã" name="disp_manha_{{ p.pk }}" {% if disp_manha_salvas|dict_get:p.pk %}checked{% endif %}></td><td><input type="checkbox" aria-label="{{ p.nome }} disponível à tarde" name="disp_tarde_{{ p.pk }}" {% if disp_tarde_salvas|dict_get:p.pk %}checked{% endif %}></td></tr>{% endfor %}
+        </tbody></table><button type="submit" class="btn">Salvar disponibilidades do dia</button></fieldset>
+    </form>
+</details>

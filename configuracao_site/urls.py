@@ -5,8 +5,10 @@ from grade.api import (
     UnidadeViewSet, DisciplinaViewSet, ProfessorViewSet,
     MatrizDistanciaViewSet, HorarioAulaViewSet, DisponibilidadeViewSet, AlocacaoGradeViewSet
 )
+from grade.api import SalaViewSet
 
 router = DefaultRouter()
+router.register(r'salas', SalaViewSet)
 router.register(r'unidades', UnidadeViewSet)
 router.register(r'disciplinas', DisciplinaViewSet)
 router.register(r'professores', ProfessorViewSet)

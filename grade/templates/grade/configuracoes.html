@@ -1,0 +1,6 @@
+{% extends 'grade/planejamento_base.html' %}
+{% block titulo %}Critérios da automação{% endblock %}
+{% block conteudo %}<div class="pagina-heading"><div><p class="eyebrow">ADMINISTRAÇÃO</p><h1>Critérios da automação</h1><p>Parâmetros gerais utilizados pelo planejamento.</p></div></div>{% if salvo %}<div class="alert-success" role="status">Configuração salva. Prévias anteriores precisam ser geradas novamente.</div>{% endif %}
+<section class="painel"><h2>Vínculos familiares e conjugais</h2><p>A ligação entre os professores é cadastrada na ficha de um deles. Este limite define quais trajetos são considerados próximos. É uma preferência: alocar longe continua permitido, com aviso.</p><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Salvar critérios</button></form></section>
+<section class="painel" style="margin-top:20px"><h2>Jornada do projeto</h2><p>Quatro aulas de 50 minutos por turno. Manhã {{ jornada.inicio_manha|time:'H:i' }}–{{ jornada.fim_manha|time:'H:i' }} · almoço {{ jornada.fim_manha|time:'H:i' }}–{{ jornada.inicio_tarde|time:'H:i' }} · tarde {{ jornada.inicio_tarde|time:'H:i' }}–{{ jornada.fim_tarde|time:'H:i' }}.</p><p>A jornada é fixa nesta versão. Turno principal, dias e contraturno são definidos no cadastro de cada turma.</p></section>
+{% endblock %}

@@ -52,7 +52,7 @@ def consultar_semana(request):
     fim = inicio + timedelta(days=6)
     aulas = list(AlocacaoGrade.objects.filter(
         professor=professor, data__range=(inicio, fim)
-    ).select_related('horario', 'unidade').order_by('data', 'horario__hora_inicio', 'pk'))
+    ).select_related('horario', 'unidade', 'turma', 'disciplina', 'sala').order_by('data', 'horario__hora_inicio', 'pk'))
     dias = [{'data': inicio + timedelta(days=i), 'aulas': []} for i in range(7)]
     for aula in aulas:
         dias[(aula.data - inicio).days]['aulas'].append(aula)
@@ -94,8 +94,11 @@ def baixar_pdf(request):
         rows.append([
             aula.data.strftime('%d/%m/%Y'),
             f'{aula.horario.hora_inicio:%H:%M}–{aula.horario.hora_fim:%H:%M}',
-            Paragraph(escape(aula.horario.nome), styles['Normal']),
-            Paragraph(escape(aula.unidade.nome), styles['Normal']),
+            Paragraph('<br/>'.join(escape(texto) for texto in (
+                (aula.disciplina.nome, aula.turma.nome) if aula.disciplina_id and aula.turma_id
+                else (aula.horario.nome,)
+            )), styles['Normal']),
+            Paragraph(escape(aula.unidade.nome + (' / ' + aula.sala.nome if aula.sala_id else ' / Sem sala')), styles['Normal']),
         ])
     if context['aulas']:
         table = Table(rows, colWidths=[80, 95, 120, 180], repeatRows=1)

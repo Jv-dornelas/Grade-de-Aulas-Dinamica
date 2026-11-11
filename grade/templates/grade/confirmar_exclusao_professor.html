@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -221,17 +222,13 @@
             background: #DC2626;
         }
     </style>
+<link rel="stylesheet" href="{% static 'grade/navegacao.css' %}?v=20261110-3">
+<link rel="stylesheet" href="{% static 'grade/formularios.css' %}?v=20261111">
 </head>
 
-<body>
+<body class="pagina-cadastro">
 
-<header class="topbar">
-
-    <a href="/" class="brand">
-        Grade <span>CCM</span>
-    </a>
-
-</header>
+{% include 'grade/navegacao_principal.html' %}
 
 
 <main class="container">
@@ -301,10 +298,10 @@
 
 
                 <button
-                    type="submit"
+                    type="submit" data-acao="excluir"
                     class="button button-danger"
                 >
-                    Sim, excluir professor
+                    Confirmar exclusão
                 </button>
 
             </div>

@@ -1,126 +1,93 @@
-#  Sistema de Gestão de Grade Horária e Alocação Docente 
+# Grade de Aulas Dinâmica
 
-> Aplicação web desenvolvida em Django para centralização, mapeamento de disponibilidade e otimização do processo de montagem de grade horária acadêmica.
+Sistema Django do Cursinho Chico Mendes para cadastros, planejamento semanal, distribuição de matérias e professores, aprovação e consulta mobile.
 
----
+Versão funcional com automação semanal integrada. A publicação do código no GitHub não implanta o sistema nem transfere bancos ou credenciais. Não há deploy automático configurado por esta implementação.
 
-##  Objetivo do Projeto
+## Acesso local
 
-O objetivo deste sistema é substituir processos manuais e controles descentralizados em planilhas por uma solução centralizada. A plataforma permite mapear a disponibilidade de professores por unidade, visualizar turmas e gerenciar restrições de horários de forma ágil, reduzindo conflitos operacionais na gestão acadêmica.
+| Área | Endereço |
+|---|---|
+| Home e login da gestão | http://localhost:8000/inicio/ |
+| Grade horária | http://localhost:8000/ |
+| Consulta do professor | http://localhost:8000/mobile/ |
+| Administração técnica | http://localhost:8000/admin/ |
 
----
+A gestão exige conta ativa com permissão de equipe. O mobile utiliza conta vinculada a um professor. Não há credenciais no repositório.
 
-##  Tecnologias Utilizadas
+## Executar o ambiente existente
 
-* **Linguagem:** Python 3.11
-* **Framework Web:** Django 5.2
-*  **API:** Django REST Framework (DRF)
-* **Banco de Dados:** SQLite (Desenvolvimento)
-* **Containerização:** Docker & Docker Compose
-* **Controle de Versão:** Git & GitHub
+Com Docker Desktop aberto, execute na raiz:
 
----
-
-##  Funcionalidades Principais
-
-* **Mapeamento de Disponibilidade:** Registro de restrições de dias e horários por docente.
-* **Gestão de Unidades e Turmas:** Organização centralizada por unidade ou local de aula.
-* **API REST:** Endpoints estruturados para integração com aplicativo mobile.
-* **Carga de Dados Fictícios:** Ingestão de massa de dados via script JSON para testes automatizados e demonstração do sistema.
-
----
-
-##  Como Executar o Projeto Localmente (via Docker)
-
-Todo o ambiente (Python, Django e dependências) já vem pronto dentro do container. Não é necessário instalar Python nem criar ambiente virtual (venv) na máquina.
-
-### Pré-requisitos
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado e em execução
-* Git instalado
-
-### Passo a Passo (primeira vez)
-
-1. **Clonar o repositório:**
-   ```bash
-   git clone https://github.com/Jv-dornelas/Grade-de-Aulas-Dinamica.git
-   cd Grade-de-Aulas-Dinamica
-   ```
-
-2. **Criar o arquivo de variáveis de ambiente:**
-
-   Copie o exemplo e gere sua própria `SECRET_KEY`:
-   ```bash
-   copy .env.example .env
-   ```
-   Edite o `.env` e substitua o valor de `SECRET_KEY` por uma chave gerada com:
-   ```bash
-   docker compose run --rm web python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-   ```
-
-3. **Subir o container:**
-   ```bash
-   docker compose up -d
-   ```
-
-4. **Aplicar as migrações do banco de dados:**
-```bash
-   docker compose exec web python manage.py migrate
-   ```
-
-5. **Carregar os dados fictícios de teste:**
-   ```bash
-   docker compose exec web python popular_banco.py
-   ```
-
-6. **Criar um usuário administrador (para acessar o /admin):**
-   ```bash
-   docker compose exec web python manage.py createsuperuser
-   ```
-
-7. **Acessar a aplicação:**
-   API (JSON): http://127.0.0.1:8000/api/
-   Admin: http://127.0.0.1:8000/admin/
-   App (Antigo): http://127.0.0.1:8000/
-
----
-
-### Uso no dia a dia (depois da primeira configuração)
-
-Ligar o ambiente:
-```bash
+```powershell
 docker compose up -d
 ```
 
-Parar o ambiente:
-```bash
-docker compose down
+O serviço local usa `runserver --noreload`. Após alterar código Python, reinicie:
+
+```powershell
+docker compose restart web
 ```
 
-Rodar qualquer comando do Django (migrate, shell, createsuperuser, etc.):
-```bash
-docker compose exec web python manage.py <comando>
+A configuração vem do `.env` local. Para uma instalação nova, utilize `.env.example` como referência; não substitua o `.env` de uma instalação existente.
+
+Nesta cópia, o banco de trabalho é `db.automacao.sqlite3`. O original `db.sqlite3` é preservado. Confirme o banco efetivo e faça backup antes de migrar ou preparar cenários. Não execute os scripts históricos de população na base atual.
+
+## Validação
+
+```powershell
+docker compose exec web python manage.py check
+docker compose exec web python manage.py test grade.tests --noinput
+docker compose exec web python manage.py makemigrations --check --dry-run
 ```
 
-Ver logs do container:
-```bash
-docker logs grade-de-aulas-dinamica-web-1
+Para um módulo específico:
+
+```powershell
+docker compose exec web python manage.py test grade.tests.test_gerador --noinput
 ```
 
----
+Os testes Django utilizam banco de teste separado. Não é necessário popular ou apagar o banco de trabalho para executá-los.
 
-##  Estrutura do Projeto
+## Estrutura
 
 ```text
-.
-├── configuracao_site/   # Configurações globais do Django (settings, urls)
-├── grade/                # App principal (models, views, templates)
-├── .dockerignore         # Regras de exclusão do Docker
-├── .env                  # Variáveis de ambiente locais (NÃO versionado)
-├── .env.example          # Modelo de variáveis de ambiente (versionado)
-├── .gitignore            # Regras de exclusão do Git
-├── dados_ficticios.json  # Massa de dados de teste
-├── docker-compose.yml    # Orquestrador de containers
-├── Dockerfile            # Receita de construção do container
-├── manage.py             # Utilitário de comando do Django
-└── requirements.txt      # Dependências do projeto Python
+configuracao_site/       Configurações, URLs globais e interfaces ASGI/WSGI
+grade/                   Aplicação Django
+  models.py              Persistência e validações dos cadastros
+  views.py, urls.py      Rotas e telas legadas preservadas
+  gerador.py             Otimização de cobertura docente
+  planejamento_curso.py  Distribuição curricular sem docente
+  restricoes.py          Validações compartilhadas
+  automacao.py           Prévia privada e confirmação
+  aprovacao.py           Aprovação e controle de versão semanal
+  curriculo.py           Sincronização da matriz com turmas
+  tests/                 Testes por funcionalidade e cenário compartilhado
+  fixtures/              Massa histórica de dados; não carregada automaticamente
+  management/commands/   Comandos de manutenção e cenários locais
+  migrations/            Histórico de evolução do banco
+  templates/grade/       Templates web e mobile
+  static/grade/          CSS, JavaScript e recursos mobile
+docs/                    Guias, arquitetura, processos e retomada local
+scripts/legacy/          Scripts antigos preservados como referência
+android-app/             Aplicativo Android e instruções próprias
+backups/                 Cópias locais dos bancos (não versionadas)
+output/, tmp/, dist/     Artefatos locais de validação e compilação
+manage.py                Entrada dos comandos Django
+requirements.txt         Dependências Python
+AUTOMACAO.md             Regras e histórico da implementação local
 ```
+
+Bancos ativos e `.env` permanecem na raiz para preservar a configuração existente. Backups antigos foram apenas movidos para `backups/`, sem alteração do conteúdo.
+
+## Documentação
+
+- [Mapa da documentação](docs/README.md)
+- [Arquitetura e decisões de organização](docs/arquitetura/ESTRUTURA.md)
+- [Regras e histórico da automação](AUTOMACAO.md)
+- [Guia mobile](docs/guias/MOBILE.md)
+- [Ponto de retomada local](docs/RETOMADA_LOCAL.md)
+- [Cenários reproduzíveis do MVP](docs/testes/CENARIOS.md)
+- [Proposta de hospedagem gratuita](docs/guias/HOSPEDAGEM_GRATUITA.md)
+
+Antes de alterar regras da geração ou preparar dados, leia `AUTOMACAO.md`. Prévia não grava aulas; confirmação valida novamente os dados e detecta alterações concorrentes. As aulas existentes são preservadas como fixas.

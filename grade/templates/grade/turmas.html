@@ -1,0 +1,13 @@
+{% extends 'grade/planejamento_base.html' %}
+{% block titulo %}Turmas{% endblock %}
+{% block conteudo %}
+<div class="pagina-heading"><div><p class="eyebrow">CADASTROS</p><h1>Turmas</h1><p>Organize as turmas, os cursos e os dias de aula de cada unidade.</p></div><a class="btn" href="{% url 'grade:exibir_grade' %}">Voltar à grade</a></div>
+<div class="cadastro-layout">
+<section class="painel" id="lista-turmas" aria-labelledby="titulo-lista"><div class="painel-heading"><h2 id="titulo-lista">Turmas cadastradas</h2><a class="btn" href="{% url 'grade:turmas' %}#form-turma">+ Nova turma</a></div>
+<div class="lista-cadastros">{% for t in turmas %}<article><a class="nome-cadastro" href="{% url 'grade:turma_editar' t.pk %}">{{ t.nome }}</a><p>{{ t.unidade.nome }} · {{ t.curso|default:'Sem curso vinculado' }}</p>{% if t.materias_fixas %}<a class="link-secundario" href="{% url 'grade:materias_turma' t.pk %}">Horários das matérias</a>{% endif %}</article>{% empty %}<p>Nenhuma turma cadastrada.</p>{% endfor %}</div></section>
+<section class="painel" id="form-turma" aria-labelledby="titulo-form"><h2 id="titulo-form">{% if form.instance.pk %}Editar turma · {{ form.instance.nome }}{% else %}Cadastrar turma{% endif %}</h2>
+<p class="descricao">O curso fornece as aulas semanais da matriz automaticamente. Configure o turno principal e, se necessário, um dia de contraturno.</p>
+{% if turma_legada %}<p class="nota">Esta turma pertence ao cadastro antigo. Para seguir uma matriz, escolha curso, turno e contraturno e use <strong>Adotar curso preservando histórico</strong>. Será criada uma nova oferta na mesma unidade. As aulas antigas não serão alteradas.</p>{% endif %}
+{% for message in messages %}<p class="nota" role="status">{{ message }}</p>{% endfor %}
+<form method="post">{% csrf_token %}{{ form.non_field_errors }}<div class="campos-cadastro">{% for field in form %}<div class="campo {% if field.name == 'dias_semana' or field.name == 'horarios' or field.name == 'materias_fixas' %}campo-largo{% endif %}">{{ field.label_tag }}{{ field }}{% if field.help_text %}<div class="ajuda">{{ field.help_text }}</div>{% endif %}{{ field.errors }}</div>{% endfor %}</div><p class="nota">Cada turno usa quatro aulas de 50 minutos. O dia do contraturno é escolhido por turma; a disponibilidade dos professores é cadastrada separadamente. Horários avulsos aplicam-se ao calendário sem turno principal.</p><div class="form-acoes"><button class="btn btn-primary" type="submit">Salvar turma</button>{% if turma_legada %}<button class="btn btn-primary" type="submit" name="acao" value="adotar_curso">Adotar curso preservando histórico</button>{% endif %}<a class="btn" href="{% url 'grade:exibir_grade' %}">Voltar à grade</a></div></form></section>
+</div>{% endblock %}

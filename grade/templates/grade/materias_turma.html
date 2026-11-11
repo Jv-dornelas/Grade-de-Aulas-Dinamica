@@ -1,0 +1,11 @@
+{% extends 'grade/planejamento_base.html' %}
+{% block conteudo %}
+<h1>Horários das matérias · {{ turma.nome }}</h1>
+<p><strong>{% if turma.materias_fixas %}Modo atual: matérias fixas, escolha de professores.{% else %}Modo atual: organizar matérias e professores. Este cadastro é opcional; salvar ou importar aqui ativa o modo de matérias fixas. Desmarque essa opção na ficha da turma para voltar ao modo flexível.{% endif %}</strong></p>
+<p>{{ turma.unidade }} · Curso {{ turma.curso|default:'não vinculado' }}. Distribuição desta turma/unidade, sem professores. A automação preenche apenas os docentes destes horários.</p>
+{% for message in messages %}<p role="status">{{ message }}</p>{% endfor %}
+<p>{{ total }} horários cadastrados / {{ carga }} aulas semanais solicitadas. Aulas já gravadas permanecem como histórico; alterações aqui afetam novas propostas.</p>
+<form method="post">{% csrf_token %}<input type="hidden" name="assinatura" value="{{ assinatura }}">
+{{ formset.management_form }}{{ formset.non_form_errors }}<table><thead><tr><th>Dia</th><th>Horário</th><th>Disciplina</th><th>Retirar</th></tr></thead><tbody>{% for f in formset %}<tr><td>{{ f.dia_semana }}{{ f.dia_semana.errors }}</td><td>{{ f.horario }}{{ f.horario.errors }}</td><td>{{ f.demanda }}{{ f.demanda.errors }}</td><td>{{ f.DELETE }}</td></tr>{% endfor %}</tbody></table><button>Salvar horários das matérias</button></form>
+<details><summary>Aproveitar a distribuição de uma semana já cadastrada</summary><p>Copia somente dias/horários/matérias, preservando todas as aulas e professores já gravados. Substitui os horários curriculares deste formulário.</p><form method="post">{% csrf_token %}<input type="hidden" name="assinatura" value="{{ assinatura }}"><input type="hidden" name="acao" value="importar"><label>Semana <input type="date" name="semana" required></label><button>Usar essa distribuição como fixa</button></form></details>
+{% endblock %}

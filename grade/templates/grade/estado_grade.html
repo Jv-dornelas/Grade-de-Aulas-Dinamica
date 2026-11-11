@@ -1,0 +1,12 @@
+<div class="estado-grade" aria-labelledby="estado-aprovacao">
+<p id="estado-aprovacao" role="status"><strong>{{ estado_grade }}</strong><span>Próxima ação: {{ proxima_acao_grade }}</span></p>
+<p class="escopo-indicadores">Semana inteira · todas as unidades{% if indicadores_grade.inclui_previa %} · inclui a proposta ainda não salva{% else %} · somente dados salvos{% endif %}</p>
+<dl class="indicadores-grade">
+<div><dt>Aulas distribuídas</dt><dd>{{ indicadores_grade.distribuidas }}<small>de {{ indicadores_grade.carga }} da matriz</small></dd></div>
+<div><dt>Com professor</dt><dd>{{ indicadores_grade.com_docente }}</dd></div>
+<div class="{% if indicadores_grade.sem_docente %}indicador-alerta{% endif %}"><dt>Sem professor</dt><dd>{{ indicadores_grade.sem_docente }}</dd></div>
+<div class="{% if indicadores_grade.sem_horario %}indicador-alerta{% endif %}"><dt>Ainda sem horário</dt><dd>{{ indicadores_grade.sem_horario }}</dd></div>
+<div><dt>Pendências aceitas</dt><dd>{{ indicadores_grade.aceitas }}<small>aceite não significa resolução</small></dd></div>
+</dl>
+{% if indicadores_grade.fora_matriz %}<p class="escopo-indicadores">{{ indicadores_grade.fora_matriz }} registro(s) histórico(s) ou fora da matriz ativa permanecem visíveis, sem aumentar a cobertura do curso.</p>{% endif %}
+</div>

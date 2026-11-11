@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gerar grade semanal | Chico Mendes</title>
+    <style>
+        *{box-sizing:border-box}body{margin:0;background:#f8fafc;color:#0f172a;font:16px/1.5 system-ui,sans-serif}
+        header{background:#0f172a;color:white;padding:18px max(20px,calc((100% - 1120px)/2));display:flex;gap:24px;flex-wrap:wrap;justify-content:space-between}
+        header a{color:#e2e8f0}main{max-width:1160px;margin:auto;padding:32px 20px 64px}h1{font-size:32px;line-height:1.2;margin:0 0 12px}h2{font-size:21px;margin-top:0}
+        p{margin:8px 0 18px}.muted{color:#475569}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:24px;margin-top:24px}
+        .fields{display:flex;gap:24px;align-items:end;flex-wrap:wrap}label{display:block;font-weight:600}input[type=date],input[type=number]{display:block;padding:11px;border:1px solid #94a3b8;border-radius:7px;font:inherit;width:100%;margin-top:7px}
+        button,.button{font:600 15px system-ui;display:inline-block;padding:13px 18px;border-radius:8px;border:0;background:#1e40af;color:white;cursor:pointer;text-decoration:none}button:disabled{opacity:.6;cursor:wait}.secondary{background:#e2e8f0;color:#0f172a}
+        a{color:#1e40af}.notice{padding:16px 20px;border-radius:9px;margin:18px 0;background:#eff6ff;border-left:4px solid #2563eb}.warning{background:#fffbeb;border-color:#b45309}.error,.errorlist{color:#991b1b;background:#fef2f2;border-color:#dc2626}.success{background:#ecfdf5;border-color:#059669}
+        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}.steps a{display:block;margin-top:7px}.stats{display:flex;flex-wrap:wrap;gap:18px}.stat{background:#f1f5f9;border-radius:9px;padding:16px;flex:1;min-width:120px}.stat strong{display:block;font-size:28px}
+        .scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px;margin-top:20px}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #e2e8f0}th{background:#f1f5f9;white-space:nowrap}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:22px}.check{font-weight:400;margin:18px 0}li+li{margin-top:7px}small{display:block}.wait{margin-top:14px}
+        @media(max-width:600px){main{padding-top:24px}.card{padding:18px}.fields>div,.fields>button{width:100%}h1{font-size:27px}}
+    </style>
+</head>
+<body>
+<header><strong>Chico Mendes · Coordenação</strong><nav><a href="{% url 'grade:exibir_grade' %}">Grade diária</a> · <a href="{% url 'admin:index' %}">Administração</a></nav></header>
+<main>
+    <h1>Gerar grade semanal</h1>
+    <p class="muted">Organize as aulas a partir das demandas cadastradas. Revise a proposta antes de adicioná-la à grade.</p>
+    {% if banco_teste %}<div class="notice warning"><strong>Ambiente de testes.</strong> As alterações desta aplicação estão sendo gravadas em uma cópia do banco.</div>{% endif %}
+    {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
+    {% if erro %}<div class="notice error" role="alert">{{ erro }}</div>{% endif %}
+    <section class="card">
+        <h2>1. Prepare os cadastros</h2>
+        <div class="steps">
+            <div><strong>O que precisa ser atendido</strong><a href="{% url 'grade:cursos' %}">Cursos e matriz semanal</a><a href="{% url 'grade:turmas' %}">Turmas, turnos e contraturno</a><a href="{% url 'grade:consultar' %}">Consultar grade salva</a><a href="{% url 'admin:grade_demandaaula_changelist' %}">Demandas legadas / professor opcional</a></div>
+            <div><strong>Quem pode lecionar</strong><a href="{% url 'admin:grade_professor_changelist' %}">Professores, disciplinas e parentesco</a><a href="{% url 'admin:grade_disponibilidade_changelist' %}">Disponibilidade por turno</a><a href="{% url 'admin:grade_disponibilidadehorario_changelist' %}">Disponibilidade por horário</a></div>
+            <div><strong>Deslocamentos</strong><a href="{% url 'admin:grade_matrizdistancia_changelist' %}">Tempo entre escolas</a><small class="muted">Cadastre ida e volta. Sem esse tempo, o professor não será deslocado entre essas escolas no mesmo dia.</small></div>
+        </div>
+        <p class="muted" style="margin-top:18px">Informe a disponibilidade nas datas da semana. O cadastro por horário prevalece sobre o turno, mas não permite aulas no almoço. Manhã: {{ jornada.inicio_manha|time:'H:i' }}–{{ jornada.fim_manha|time:'H:i' }}. Almoço: {{ jornada.fim_manha|time:'H:i' }}–{{ jornada.inicio_tarde|time:'H:i' }}. Tarde: {{ jornada.inicio_tarde|time:'H:i' }}–{{ jornada.fim_tarde|time:'H:i' }}. A pausa de uma hora também pode ser usada no deslocamento.</p>
+        <small class="muted">Esta versão mantém o formato atual: uma aula por escola em cada intervalo. As aulas já salvas são consideradas fixas.</small>
+    </section>
+    <section class="card">
+        <h2>2. Gere uma proposta</h2>
+        <form method="post" id="gerar-form">
+            {% csrf_token %}<input type="hidden" name="acao" value="gerar">
+            {{ form.non_field_errors }}
+            <div class="fields"><div>{{ form.semana.label_tag }}{{ form.semana }}{{ form.semana.errors }}</div><div>{{ form.proximidade }}{{ form.proximidade.errors }}</div><button type="submit" id="gerar-btn">Gerar prévia da semana</button></div>
+            <p class="muted" style="margin-top:18px">Parentesco vale para ambos: quando os dois trabalharem no mesmo dia, o sistema priorizará escolas iguais ou próximas. Se não conseguir, mostrará um aviso. A prioridade é atender a demanda respeitando todas as regras obrigatórias.</p>
+            <small>O cálculo leva até cerca de 10 segundos. Gerar a prévia não altera a grade salva.</small>
+            <div id="aguarde" class="wait" role="status" hidden>Calculando a semana… aguarde.</div>
+        </form>
+    </section>
+    {% if previa %}
+    <section class="card" id="resultado">
+        <h2>3. Revise a semana de {{ inicio|date:"d/m/Y" }}</h2><p><strong>{{ status_texto }}</strong> · Proximidade: {{ previa.proximidade }} minutos</p>
+        {% if resultado.resumo %}<div class="stats"><div class="stat"><strong>{{ resultado.resumo.fixas|default:0 }}</strong>Aulas já salvas</div><div class="stat"><strong>{{ linhas|length }}</strong>Novas aulas</div><div class="stat"><strong>{{ resultado.resumo.pendentes|default:0 }}</strong>Aulas pendentes</div></div>{% endif %}
+        {% if resultado.avisos %}<div class="notice warning"><strong>Avisos de preferência</strong><ul>{% for aviso in resultado.avisos %}<li>{{ aviso }}</li>{% endfor %}</ul></div>{% endif %}
+        {% if resultado.pendencias %}<div class="notice warning"><strong>Pendências e orientações</strong><ul>{% for item in resultado.pendencias %}<li>{{ item }}</li>{% endfor %}</ul></div>{% endif %}
+        {% if linhas %}<div class="scroll"><table><thead><tr><th>Data</th><th>Horário</th><th>Escola / Turma</th><th>Disciplina</th><th>Professor</th></tr></thead><tbody>{% for aula in linhas %}<tr><td>{{ aula.data|date:"D, d/m" }}</td><td>{{ aula.horario.hora_inicio|time:"H:i" }}–{{ aula.horario.hora_fim|time:"H:i" }}</td><td>{{ aula.unidade.nome }}<small class="muted">{{ aula.turma.nome }}</small></td><td>{{ aula.disciplina.nome }}</td><td>{{ aula.professor.nome }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+        <div class="actions">
+            {% if pode_salvar %}<form method="post">{% csrf_token %}<input type="hidden" name="acao" value="salvar"><input type="hidden" name="token" value="{{ previa.token }}">{% if resultado.resumo.pendentes %}<label class="check"><input type="checkbox" name="aceitar_parcial" required> Revisei as pendências e desejo salvar somente as aulas propostas.</label>{% endif %}<button type="submit">Confirmar e adicionar {{ linhas|length }} aulas</button></form>{% endif %}
+            <form method="post">{% csrf_token %}<input type="hidden" name="acao" value="descartar"><button type="submit" class="secondary">Descartar prévia</button></form>
+        </div>
+        <small class="muted" style="margin-top:18px">A confirmação preserva as aulas anteriores. Se alguém alterar os cadastros, será preciso gerar outra proposta. A prévia vale por 30 minutos.</small>
+    </section>
+    {% endif %}
+</main>
+<script>document.getElementById('gerar-form').addEventListener('submit',function(){document.getElementById('gerar-btn').disabled=true;document.getElementById('aguarde').hidden=false;});</script>
+</body></html>

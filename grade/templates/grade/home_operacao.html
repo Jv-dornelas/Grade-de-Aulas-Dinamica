@@ -1,0 +1,21 @@
+<section class="home-operacao" aria-label="Automação e aprovação">
+    <article class="home-operacao-card">
+        <span class="home-operacao-etapa">01 · GERAR</span>
+        <h2>Automação da semana</h2>
+        <strong>{% if turmas_flexiveis_home and not turmas_fixas_home %}Organizar matérias e professores{% elif turmas_fixas_home and not turmas_flexiveis_home %}Escolher professores de matérias fixas{% else %}Geração conforme o modo de cada turma{% endif %}</strong>
+        <p>{{ turmas_flexiveis_home }} turma{{ turmas_flexiveis_home|pluralize:'s' }} no modo flexível · {{ turmas_fixas_home }} com matérias fixas.</p>
+        <p>Gerar grade preenche os espaços disponíveis e respeita matriz, disponibilidades, deslocamentos e aulas já gravadas.</p>
+        <a href="{% url 'grade:turmas' %}">Ver configuração das turmas</a>
+    </article>
+    <article class="home-operacao-card home-card-aprovacao">
+        <span class="home-operacao-etapa">02 · REVISAR → 03 · APROVAR</span>
+        <h2>Revisão da distribuição</h2>
+        {% if pode_salvar and previa_visivel %}<strong>Prévia aguardando aprovação</strong><p>{{ total_propostas }} novas aulas para conferir no quadro. Use <b>Aprovar e gravar prévia</b> para confirmar.</p>
+        {% elif previa %}<strong>Confira o resultado da geração</strong><p>Veja o estado da prévia e as pendências abaixo. A aprovação só é habilitada para uma proposta válida.</p>
+        {% elif aprovacao_vigente %}<strong>Grade aprovada{% if aprovacao_vigente.parcial %} parcialmente{% endif %}</strong><p>{{ aprovacao_vigente.aprovado_em|date:'d/m/Y H:i' }} · {{ aprovacao_vigente.aprovado_por|default:'usuário removido' }}. A aprovação identifica esta versão da semana.</p>
+        {% elif aprovacao_alterada %}<strong>Grade alterada após a aprovação</strong><p>Revise as mudanças e use <b>Aprovar grade</b> para confirmar a versão atual.</p>
+        {% elif total_salvas %}<strong>{{ total_salvas }} aulas aguardando aprovação</strong><p>A semana já está gravada. Clique no botão verde <b>Aprovar grade</b>, no topo, para revisar e confirmar.</p>
+        {% else %}<strong>Pronta para gerar uma prévia</strong><p>Use <b>Gerar grade</b>, revise as propostas no quadro e confirme no botão verde. Gerar não grava aulas automaticamente.</p>{% endif %}
+        <a href="#estado-aprovacao">Ver estado da aprovação</a>
+    </article>
+</section>
