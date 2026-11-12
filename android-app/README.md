@@ -1,5 +1,13 @@
 # Minha Grade para Android — demonstração acadêmica
 
+## Atualização de teste — 11/11/2026
+
+Versão 1.3-demo (código 4): origem HTTPS do túnel de demonstração pré-configurada. Primeira instalação abre diretamente o portal; configurações salvas com os dois IPs locais antigos são migradas para o túnel. Outros servidores personalizados são preservados. A URL é temporária e pode exigir Opções → Trocar servidor no futuro; não há descoberta automática de novos túneis.
+
+Versão 1.2-demo (código 3): barras, cabeçalho, ícone e tela de conexão alinhados à paleta azul-escuro/azul da home. O conteúdo da grade vem do Django atualizado. O usuário confirmou conexão do APK ao servidor local; login, PDF, impressão e a nova aparência ainda precisam de conferência em aparelho. O relato de tela branca abaixo é histórico, não um novo resultado de teste.
+
+É possível configurar uma origem HTTPS do túnel temporário em Opções → Trocar servidor. Não acrescente `/mobile/`. O endereço dura enquanto o túnel atual existir; reiniciar/recriar o túnel pode gerar outro. O computador, Docker e os containers precisam permanecer ligados. Consulte `docs/guias/TUNEL_MOBILE.md` na raiz do repositório.
+
 ## Estado atual — 18/09/2026
 
 **Experimental: ainda não validado para apresentação.** No teste em aparelho físico, o usuário relatou que o APK continua com a tela em branco e não exibe a interface que funciona pelo navegador mobile. Os ajustes da versão 1.1 não resolveram esse comportamento no dispositivo.

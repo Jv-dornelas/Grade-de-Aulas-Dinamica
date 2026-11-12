@@ -1,0 +1,19 @@
+# Ambiente separado e sem portas publicadas no computador.
+# Iniciar: docker compose -p grade-mobile -f docker-compose.mobile.yml up -d --build
+services:
+  portal:
+    build: .
+    command: python manage.py runserver --noreload 0.0.0.0:8000
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: configuracao_site.settings_mobile_publico
+    restart: "no"
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --url http://portal:8000
+    depends_on:
+      - portal
+    restart: "no"

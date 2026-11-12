@@ -1,5 +1,15 @@
 # Automação semanal — versão para testes
 
+## Diagnósticos e refatoração incremental — 11/11/2026
+
+Validação final: 269 testes passaram, incluindo ações de diagnóstico, candidato alternativo sem bloqueio e isolamento do portal público. Dry-run de migrações sem mudanças. Não alterados cadastros, aulas ou aprovações nesta etapa.
+
+`diagnosticos.py` centraliza causas e ações verificáveis: habilitação ausente, unidade não permitida, vínculo legado incompatível, indisponibilidade explícita, limite diário e conflitos de professor/trajeto. Os cards sem docente são diagnosticados com a distribuição resultante, incluindo aulas fixas. Trata-se de bloqueios locais nessa distribuição, não de prova de causa única ou de inviabilidade global. Um candidato localmente livre mantém mensagem explícita de incerteza. Mensagens antigas já persistidas não são reescritas automaticamente; nova geração usa os novos diagnósticos. Não altera restrições nem atribui disponibilidade fictícia.
+
+Orquestração da página movida de `views.py` para `pagina_grade.py`, com reexportação para preservar rotas e imports; CSS principal extraído do template para `grade_principal.css`, incluído no versionamento dos assets. Diagnóstico separado da sessão/apresentação. A refatoração é incremental: ainda há estilos legados e dependências a separar, sem reestruturação ampla nesta etapa.
+
+Incluídos também os ajustes locais anteriores do mobile, APK 1.3 e configuração de túnel isolado. Binários, bancos e credenciais continuam fora do Git. Portal público testado por HTTPS, sem acesso a Admin/API/gestão; interação em aparelho depende da validação do usuário. Não recriar túnel só para aplicar ajustes da gestão local.
+
 ## Avisos por e-mail — 11/11/2026
 
 Validação: 262 testes passaram, migrações dry-run sem alterações, backend local de arquivos confirmado e hash do banco original inalterado. Não realizado teste de entrega SMTP real.

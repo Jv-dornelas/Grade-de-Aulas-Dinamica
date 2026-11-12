@@ -45,7 +45,7 @@ import java.util.concurrent.Executors;
 
 /** Contêiner híbrido: telas no Django; conexão, impressão e arquivos no Android. */
 public class MainActivity extends Activity {
-    private static final String DEFAULT_SERVER = "http://10.207.220.201:8000";
+    private static final String DEFAULT_SERVER = "https://davidson-terrace-animated-mice.trycloudflare.com";
     private static final int SAVE_PDF = 10;
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private WebView web;
@@ -67,6 +67,13 @@ public class MainActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         server = getPreferences(MODE_PRIVATE).getString("server", DEFAULT_SERVER);
+        if (!getPreferences(MODE_PRIVATE).getBoolean("configured", false)
+                || "http://10.207.220.201:8000".equals(server)
+                || "http://192.168.15.37:8000".equals(server)) {
+            server = DEFAULT_SERVER;
+            getPreferences(MODE_PRIVATE).edit().putString("server", server)
+                .putBoolean("configured", true).apply();
+        }
         if (state != null) {
             String savedFile = state.getString("pendingPdf");
             if (savedFile != null && savedFile.matches("grade-[a-f0-9-]+\\.pdf")) {
@@ -76,7 +83,7 @@ public class MainActivity extends Activity {
         }
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.rgb(22, 78, 71));
+        root.setBackgroundColor(Color.rgb(15, 23, 42));
         root.setOnApplyWindowInsetsListener((view, insets) -> {
             if (android.os.Build.VERSION.SDK_INT >= 30) {
                 android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
@@ -102,7 +109,7 @@ public class MainActivity extends Activity {
         options.setTextColor(Color.WHITE);
         options.setTextSize(22);
         options.setAllCaps(false);
-        options.setBackground(rounded(Color.rgb(42, 98, 89), 14));
+        options.setBackground(rounded(Color.rgb(30, 41, 59), 14));
         options.setElevation(0);
         options.setOnClickListener(v -> showOptions());
         toolbar.addView(options, new LinearLayout.LayoutParams(dp(52), dp(44)));
@@ -110,50 +117,50 @@ public class MainActivity extends Activity {
         progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         root.addView(progress, new LinearLayout.LayoutParams(-1, dp(3)));
         web = new WebView(this);
-        web.setBackgroundColor(Color.rgb(244, 247, 245));
+        web.setBackgroundColor(Color.rgb(248, 250, 252));
         FrameLayout content = new FrameLayout(this);
         content.addView(web, new FrameLayout.LayoutParams(-1, -1));
         connectionPanel = new LinearLayout(this);
         connectionPanel.setOrientation(LinearLayout.VERTICAL);
         connectionPanel.setGravity(android.view.Gravity.CENTER);
         connectionPanel.setPadding(dp(28), dp(32), dp(28), dp(32));
-        connectionPanel.setBackgroundColor(Color.rgb(244, 247, 245));
+        connectionPanel.setBackgroundColor(Color.rgb(248, 250, 252));
         TextView symbol = new TextView(this);
         symbol.setText("▦");
         symbol.setTextSize(60);
-        symbol.setTextColor(Color.rgb(22, 78, 71));
+        symbol.setTextColor(Color.rgb(15, 23, 42));
         connectionPanel.addView(symbol);
         TextView eyebrow = new TextView(this);
         eyebrow.setText("ESPAÇO DO PROFESSOR");
         eyebrow.setTextSize(11);
         eyebrow.setLetterSpacing(.15f);
-        eyebrow.setTextColor(Color.rgb(82, 118, 106));
+        eyebrow.setTextColor(Color.rgb(30, 64, 175));
         connectionPanel.addView(eyebrow);
         connectionTitle = new TextView(this);
         connectionTitle.setTextSize(28);
         connectionTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         connectionTitle.setGravity(android.view.Gravity.CENTER);
-        connectionTitle.setTextColor(Color.rgb(32, 60, 54));
+        connectionTitle.setTextColor(Color.rgb(15, 23, 42));
         connectionTitle.setPadding(0, dp(20), 0, dp(12));
         connectionPanel.addView(connectionTitle);
         connectionMessage = new TextView(this);
         connectionMessage.setTextSize(15);
         connectionMessage.setGravity(android.view.Gravity.CENTER);
-        connectionMessage.setTextColor(Color.rgb(89, 110, 101));
+        connectionMessage.setTextColor(Color.rgb(71, 85, 105));
         connectionMessage.setPadding(0, 0, 0, dp(24));
         connectionPanel.addView(connectionMessage);
         retryButton = new Button(this);
         retryButton.setText("Tentar novamente");
         retryButton.setAllCaps(false);
         retryButton.setTextColor(Color.WHITE);
-        retryButton.setBackground(rounded(Color.rgb(22, 78, 71), 14));
+        retryButton.setBackground(rounded(Color.rgb(30, 64, 175), 14));
         retryButton.setElevation(0);
         retryButton.setOnClickListener(v -> web.loadUrl(server + "/mobile/"));
         connectionPanel.addView(retryButton, new LinearLayout.LayoutParams(-1, dp(52)));
         Button changeServer = new Button(this);
         changeServer.setText("Configurar conexão");
         changeServer.setAllCaps(false);
-        changeServer.setTextColor(Color.rgb(22, 78, 71));
+        changeServer.setTextColor(Color.rgb(15, 23, 42));
         changeServer.setBackgroundColor(Color.TRANSPARENT);
         changeServer.setOnClickListener(v -> configureServer());
         connectionPanel.addView(changeServer, new LinearLayout.LayoutParams(-1, dp(52)));

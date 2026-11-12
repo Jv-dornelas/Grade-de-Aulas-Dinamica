@@ -124,7 +124,7 @@ def manifesto(request):
     return JsonResponse({
         'id': '/mobile/', 'name': 'Minha Grade • Professores', 'short_name': 'Minha Grade',
         'lang': 'pt-BR', 'start_url': '/mobile/', 'scope': '/mobile/',
-        'display': 'standalone', 'theme_color': '#164e47', 'background_color': '#f4f7f5',
+        'display': 'standalone', 'theme_color': '#0f172a', 'background_color': '#f8fafc',
         'icons': [{'src': f'/static/grade/mobile/icon-{size}.png',
                    'sizes': f'{size}x{size}', 'type': 'image/png'} for size in (192, 512)],
     }, content_type='application/manifest+json')

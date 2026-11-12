@@ -306,8 +306,13 @@ def _gerar(inicio, fim, proximidade, prazo, conferir_tempo):
 
 
 def _pendencias(demandas, restantes, contagem):
-    return [f'{d.turma.nome} / {d.disciplina.nome}: faltam {restantes[d.pk] - contagem[d.pk]} professor(es)/aula(s). Verifique a distribuição fixa da matéria, habilitação, disponibilidade, limites, unidades permitidas e deslocamentos.'
-            for d in demandas if restantes[d.pk] > contagem[d.pk]]
+    from .diagnosticos import diagnostico
+    faltantes = [d for d in demandas if restantes[d.pk] > contagem[d.pk]]
+    if not faltantes:
+        return []
+    motor = MotorRestricoes()
+    return [f'{d.turma.nome} / {d.disciplina.nome}: faltam {restantes[d.pk] - contagem[d.pk]} professor(es)/aula(s). '
+            + diagnostico(d, motor) for d in faltantes]
 
 
 def _resumo(demandas, fixas, geradas, pendentes):

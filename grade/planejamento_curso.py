@@ -6,6 +6,7 @@ from time import monotonic
 from .models import AlocacaoGrade, DemandaAula
 from .restricoes import MotorRestricoes
 from .jornada import durante_almoco
+from .diagnosticos import diagnostico
 from django.core.exceptions import ValidationError
 
 
@@ -77,6 +78,9 @@ def completar_curso(resultado, inicio, prazo):
     except ValidationError as exc:
         return {'status': 'invalid', 'propostas': [], 'pendencias': exc.messages, 'avisos': []}
     sem_professor = [a for a in fixas + propostas if not a.professor_id]
+    for aula in sem_professor:
+        if aula.demanda_id:
+            aula.motivo_pendencia = diagnostico(aula.demanda, motor, aula, fixas + propostas)
     contagem = Counter(a.demanda_id for a in fixas + propostas if a.demanda_id)
     nao_distribuidas = sum(max(0, d.quantidade_semana - contagem[d.pk]) for d in
                           DemandaAula.objects.filter(ativa=True))
@@ -92,16 +96,3 @@ def completar_curso(resultado, inicio, prazo):
     if nao_distribuidas:
         resultado['pendencias'].append(f'{nao_distribuidas} aulas ainda sem horário. Confira calendário, carga e ocupação da unidade; não foi possível completar a distribuição neste cálculo.')
     return resultado
-
-
-def diagnostico(demanda, motor, aula=None):
-    habilitados = [p for p in motor.professores if demanda.disciplina_id in motor._disciplinas[p]]
-    if not habilitados:
-        return 'Nenhum professor habilitado para esta disciplina.'
-    elegiveis = [p for p in habilitados if motor.permitido(p, demanda.turma.unidade_id)
-                 and (not demanda.professor_id or p == demanda.professor_id)]
-    if not elegiveis:
-        return 'Nenhum professor habilitado permitido nesta unidade ou no vínculo legado.'
-    if aula and not any(motor.disponivel(p, aula.data, aula.horario_id) for p in elegiveis):
-        return 'Nenhum professor habilitado com disponibilidade cadastrada neste horário.'
-    return 'Não foi encontrado docente neste planejamento. Confira disponibilidade, limites, conflitos e deslocamentos; não é prova de falta de professor.'
