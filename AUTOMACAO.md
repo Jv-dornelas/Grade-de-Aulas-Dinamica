@@ -1,5 +1,13 @@
 # Automação semanal — versão para testes
 
+## Exceção exclusiva do editor manual — 11/11/2026
+
+Validação: 274 testes passaram; dry-run sem mudanças de migração. Cobertos confirmação/justificativa, auditoria/card, rejeição de sobreposição e flag forjada, preservação pelo gerador sem novas exceções. Interface verificada por renderização HTML nos testes, sem inspeção visual em aparelho/navegador nesta etapa.
+
+Editor com botão Fechar estilizado e painel de atenção para confirmar exceção de limite diário, com justificativa obrigatória (até 200 caracteres), administrador ativo e registro em LogEntry na mesma transação da aula. Usa os campos existentes de motivo/autor; não há migração. O card destaca a exceção e a revisão recebe aviso. Habilitação, disponibilidade, unidade, turma, sala, sobreposição e deslocamento permanecem bloqueios obrigatórios.
+
+O motor aceita a exceção recém-autorizada apenas pelo caminho interno do formulário manual. Para aulas já salvas, exige campos inalterados e registro de auditoria correspondente; simples flags enviadas por API/prévia não concedem autorização. A automação não cria exceções e não acrescenta aulas ao professor acima do limite: preserva somente a aula fixa manual já auditada. Replicação não transfere autorização para outras datas. Ao editar uma aula excepcional, a confirmação e justificativa precisam ser novamente informadas para manter a exceção. Não foram alteradas aulas/cadastros do banco de trabalho para testar.
+
 ## Diagnósticos e refatoração incremental — 11/11/2026
 
 Validação final: 269 testes passaram, incluindo ações de diagnóstico, candidato alternativo sem bloqueio e isolamento do portal público. Dry-run de migrações sem mudanças. Não alterados cadastros, aulas ou aprovações nesta etapa.

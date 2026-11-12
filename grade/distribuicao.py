@@ -55,6 +55,8 @@ def dados_distribuicao(request, dia, contexto_auto):
         item['curso'] = mapa_cursos.get(turma.pk) if turma else None
         item['proposta'] = proposta
         item['sem_professor'] = pendente or not item['professor']
+        item['excecao_manual'] = bool(not proposta and not pendente and aula.eh_excecao_limite_aulas)
+        item['justificativa_excecao'] = aula.motivo_excecao_limite if item['excecao_manual'] else ''
         item['motivo_pendencia'] = item.get('motivo_pendencia', '') if proposta or pendente else aula.motivo_pendencia
         item['id'] = None if proposta or pendente else aula.pk
         campos_editor = {'proposta': indice} if proposta else {'editar': aula.pk} if not pendente else {

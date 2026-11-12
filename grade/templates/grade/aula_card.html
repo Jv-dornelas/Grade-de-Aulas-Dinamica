@@ -1,5 +1,6 @@
 <article class="aula-grade {% if aula.sem_professor %}aula-sem-professor{% elif aula.proposta %}aula-proposta{% else %}aula-salva{% endif %}" data-origem="{% if aula.proposta %}proposta{% elif aula.id %}salva{% else %}curriculo{% endif %}">
                             {% if aula.proposta %}<span class="estado-aula">Prévia</span>{% endif %}
+                            {% if aula.excecao_manual %}<small class="marca-excecao">⚠ Exceção manual de limite: {{ aula.justificativa_excecao }}</small>{% endif %}
                             <strong>{{ aula.disciplina.nome|default:'Aula legada' }}</strong>
                             <span>{% if aula.sem_professor %}<strong>Sem professor</strong>{% else %}{{ aula.professor.nome|default:'Cadastro indisponível' }}{% endif %}</span>
                             <span>{{ aula.turma.nome|default:'Sem turma vinculada' }}</span>

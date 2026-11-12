@@ -45,6 +45,9 @@ class DemandaSelect(forms.Select):
 
 
 class AulaForm(forms.ModelForm):
+    confirmar_excecao = forms.BooleanField(required=False, label='Confirmo a exceção manual de limite diário')
+    justificativa_excecao = forms.CharField(required=False, max_length=200, label='Justificativa da exceção',
+        widget=forms.Textarea(attrs={'rows': 2}))
     class Meta:
         model = AlocacaoGrade
         fields = ['data', 'horario', 'unidade', 'sala', 'demanda', 'professor']
@@ -52,8 +55,13 @@ class AulaForm(forms.ModelForm):
         labels = {'demanda': 'Turma e disciplina (matriz semanal)'}
         help_texts = {'demanda': 'Selecione o vínculo curricular. Vazio mantém uma aula legada, sem turma/curso.'}
 
-    def __init__(self, *args, proposta=False, **kwargs):
+    def __init__(self, *args, proposta=False, usuario=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.proposta = proposta
+        self.usuario = usuario
+        if proposta:
+            self.fields.pop('confirmar_excecao')
+            self.fields.pop('justificativa_excecao')
         self.fields['professor'].required = False
         self.fields['professor'].empty_label = 'Sem professor'
         self.fields['sala'].empty_label = 'Sem sala · reserva toda a unidade'
@@ -79,6 +87,16 @@ class AulaForm(forms.ModelForm):
         self.instance.turma = demanda.turma if demanda else None
         self.instance.disciplina = demanda.disciplina if demanda else None
         self.instance.motivo_pendencia = '' if dados.get('professor') else 'Docente ainda não atribuído pela coordenação.'
+        if not self.proposta:
+            confirmar = dados.get('confirmar_excecao', False)
+            motivo = (dados.get('justificativa_excecao') or '').strip()
+            if confirmar and (not motivo or not self.usuario or not self.usuario.is_active or not self.usuario.is_staff):
+                raise ValidationError('Para confirmar a exceção manual, informe a justificativa. A ação exige um administrador ativo.')
+            self.instance.eh_excecao_limite_aulas = confirmar
+            self.instance.motivo_excecao_limite = motivo if confirmar else ''
+            self.instance._limite_manual_autorizado = confirmar
+            if confirmar:
+                self.instance.autorizado_por = self.usuario
         return dados
 
 
@@ -116,7 +134,8 @@ def contexto_editor(request, auto, dia):
         if dados.get(campo, '').isdecimal() and len(dados[campo]) < 11:
             inicial[campo] = dados[campo]
     form = AulaForm(request.POST if request.method == 'POST' else None,
-                    instance=aula, initial=inicial if not aula.pk and not proposta else None, proposta=proposta)
+                    instance=aula, initial=inicial if not aula.pk and not proposta else None, proposta=proposta,
+                    usuario=request.user)
     if request.method == 'GET' and dados.get('turma', '').isdecimal() and not aula.pk and not proposta:
         form.fields['demanda'].queryset = form.fields['demanda'].queryset.filter(turma_id=dados['turma'])
     if request.method == 'POST' and request.POST.get('acao') == 'salvar_aula':
@@ -164,6 +183,13 @@ def contexto_editor(request, auto, dia):
                         avisos = validar_alocacao_individual(aula)
                         aula.autorizado_por = request.user
                         aula.save()
+                        if aula.eh_excecao_limite_aulas:
+                            from django.contrib.admin.models import LogEntry, CHANGE
+                            from django.contrib.contenttypes.models import ContentType
+                            LogEntry.objects.log_action(user_id=request.user.pk,
+                                content_type_id=ContentType.objects.get_for_model(aula).pk,
+                                object_id=aula.pk, object_repr=str(aula)[:200], action_flag=CHANGE,
+                                change_message='Exceção manual de limite diário: ' + aula.motivo_excecao_limite)
                         messages.success(request, 'Aula salva na distribuição.')
                         for aviso in avisos:
                             messages.warning(request, aviso)

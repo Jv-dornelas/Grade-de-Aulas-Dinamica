@@ -1,7 +1,7 @@
 {% if erro_editor %}<div class="semana-aviso erro" role="alert">{{ erro_editor }}</div>{% endif %}
 {% if aula_form %}
 <section id="editor-aula" class="editor-aula" aria-labelledby="titulo-editor" tabindex="-1">
-    <div class="grupo-heading"><h3 id="titulo-editor">{% if editor_proposta %}Ajustar aula da prévia{% elif aula_editor.pk %}Editar aula salva{% else %}Adicionar aula à grade{% endif %}</h3><a href="{{ url_fechar_editor }}">Fechar editor</a></div>
+    <div class="grupo-heading"><h3 id="titulo-editor">{% if editor_proposta %}Ajustar aula da prévia{% elif aula_editor.pk %}Editar aula salva{% else %}Adicionar aula à grade{% endif %}</h3><a class="btn fechar-editor" href="{{ url_fechar_editor }}">✕ Fechar editor</a></div>
     <form method="post" id="form-aula">
         {% csrf_token %}<input type="hidden" name="acao" value="salvar_aula">
         <input type="hidden" name="visao" value="{{ visao }}"><input type="hidden" name="por" value="{{ por }}"><input type="hidden" name="entidade" value="{{ entidade }}">
@@ -9,7 +9,18 @@
         {% elif aula_editor.pk %}<input type="hidden" name="editar" value="{{ aula_editor.pk }}"><input type="hidden" name="estado" value="{{ estado_editor }}">
         {% else %}<input type="hidden" name="nova" value="1"><input type="hidden" name="estado" value="{{ estado_editor }}">{% endif %}
         {{ aula_form.non_field_errors }}
-        <div class="campos-aula">{% for campo in aula_form %}<div><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{{ campo.errors }}{% if campo.help_text %}<small>{{ campo.help_text }}</small>{% endif %}</div>{% endfor %}</div>
+        <div class="campos-aula">{% for campo in aula_form %}{% if campo.name != 'confirmar_excecao' and campo.name != 'justificativa_excecao' %}<div><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{{ campo.errors }}{% if campo.help_text %}<small>{{ campo.help_text }}</small>{% endif %}</div>{% endif %}{% endfor %}</div>
+        {% if not editor_proposta %}
+        <details class="excecao-manual" {% if aula_form.errors or aula_form.confirmar_excecao.value %}open{% endif %}>
+            <summary>⚠ Exceção administrativa — somente limite diário</summary>
+            <p><strong>Atenção: esta opção permite ultrapassar o limite diário do professor.</strong> Confirme apenas após revisar o impacto. A justificativa, seu usuário e a data serão registrados. A automação não cria essas exceções.</p>
+            <p>Habilitação, disponibilidade, sala, turma e deslocamento continuam obrigatórios; esta confirmação não libera outros conflitos.</p>
+            <label class="confirmacao-excecao">{{ aula_form.confirmar_excecao }} {{ aula_form.confirmar_excecao.label }}</label>
+            {{ aula_form.confirmar_excecao.errors }}
+            <label for="{{ aula_form.justificativa_excecao.id_for_label }}">{{ aula_form.justificativa_excecao.label }}</label>
+            {{ aula_form.justificativa_excecao }}{{ aula_form.justificativa_excecao.errors }}
+        </details>
+        {% endif %}
         <p>{% if editor_proposta %}Este ajuste muda apenas a prévia. Turma e disciplina são preservadas. A confirmação continua necessária para gravar a semana.{% else %}Salvar altera esta aula, preservando os vínculos curriculares. Disponibilidade, conflitos, carga semanal e deslocamento são validados antes de gravar.{% endif %}</p>
         <button class="btn btn-primary" type="submit">{% if editor_proposta %}Aplicar ajuste à prévia{% else %}Salvar aula{% endif %}</button>
     </form>

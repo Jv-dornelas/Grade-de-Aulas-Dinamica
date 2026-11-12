@@ -173,6 +173,9 @@ class MotorRestricoes:
 
     def validar(self, alocacoes, proximidade=None):
         alocacoes = list(alocacoes)
+        from .excecoes_manuais import excecoes_persistidas, limite_autorizado
+        excecoes = excecoes_persistidas(alocacoes)
+        autorizadas = Counter()
         salas_anteriores = {a.pk: (a.data, a.horario_id, a.unidade_id, a.sala_id)
                             for a in AlocacaoGrade.objects.filter(pk__in=[a.pk for a in alocacoes if a.pk])}
         posicoes_anteriores = {a.pk: (a.data, a.horario_id, a.demanda_id) for a in AlocacaoGrade.objects.filter(
@@ -216,11 +219,15 @@ class MotorRestricoes:
                              'aulas planejadas precisam manter os três vínculos.')
             if prof:
                 contagem[(a.professor_id, a.data)] += 1
+                if limite_autorizado(a, excecoes):
+                    autorizadas[(a.professor_id, a.data)] += 1
             if any(getattr(a, campo, False) for campo in (
-                'eh_excecao_limite_aulas', 'eh_excecao_horario',
+                'eh_excecao_horario',
                 'eh_excecao_deslocamento', 'eh_excecao_area_acumulo',
             )):
                 erros.append(f'{contexto}: exceções não podem contornar as restrições obrigatórias.')
+            if a.eh_excecao_limite_aulas and not limite_autorizado(a, excecoes):
+                erros.append(f'{contexto}: exceção de limite exige confirmação no editor manual e justificativa.')
             if a.turma_id:
                 turma = self.turmas.get(a.turma_id)
                 if not turma:
@@ -245,7 +252,7 @@ class MotorRestricoes:
                     demanda_contagem[(demanda.pk, segunda_da_semana(a.data))] += 1
         for (prof_id, data), quantidade in contagem.items():
             professor = self.professores[prof_id]
-            if quantidade > professor.limite_aulas:
+            if quantidade - autorizadas[(prof_id, data)] > professor.limite_aulas:
                 erros.append(f'{data:%d/%m/%Y}: {professor.nome} excedeu o limite de '
                              f'{professor.limite_aulas} aulas por dia ({quantidade} aulas).')
         for (demanda_id, semana), quantidade in demanda_contagem.items():
@@ -259,7 +266,10 @@ class MotorRestricoes:
                 erros.append(f'{a.data:%d/%m/%Y}: {motivo}')
         if erros:
             raise ValidationError(list(dict.fromkeys(erros)))
-        return self.avisos_parentesco(validas, proximidade)
+        avisos = self.avisos_parentesco(validas, proximidade)
+        avisos.extend(f'{a.data:%d/%m/%Y}: exceção manual de limite diário registrada — {a.motivo_excecao_limite}'
+                      for a in validas if limite_autorizado(a, excecoes))
+        return avisos
 
 
 def validar_alocacao_individual(instance):
