@@ -26,7 +26,7 @@ MatrizFormSet = inlineformset_factory(Curso, MatrizCurricular,
 
 @staff_member_required(login_url='grade:inicio')
 @require_http_methods(['GET', 'POST'])
-def cursos(request, pk=None):
+def cursos(request, pk=None, novo=False):
     curso = get_object_or_404(Curso, pk=pk) if pk else Curso()
     form = CursoForm(request.POST or None, instance=curso)
     matriz = MatrizFormSet(request.POST or None, instance=curso)
@@ -54,7 +54,8 @@ def cursos(request, pk=None):
                     return redirect('grade:curso_editar', pk=curso.pk)
         except (ValidationError, ProtectedError) as exc:
             erro = ' '.join(exc.messages) if isinstance(exc, ValidationError) else 'Curso vinculado a turmas: preserve o histórico; a exclusão foi impedida.'
-    return render(request, 'grade/cursos.html', {'form':form, 'matriz':matriz, 'curso':curso, 'cursos':Curso.objects.all(), 'erro':erro})
+    return render(request, 'grade/cursos.html', {'form':form, 'matriz':matriz, 'curso':curso, 'cursos':Curso.objects.all(), 'erro':erro,
+        'listagem': not pk and not novo and request.method == 'GET'})
 
 
 @staff_member_required(login_url='grade:inicio')

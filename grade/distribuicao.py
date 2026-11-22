@@ -55,8 +55,8 @@ def dados_distribuicao(request, dia, contexto_auto):
         item['curso'] = mapa_cursos.get(turma.pk) if turma else None
         item['proposta'] = proposta
         item['sem_professor'] = pendente or not item['professor']
-        item['excecao_manual'] = bool(not proposta and not pendente and aula.eh_excecao_limite_aulas)
-        item['justificativa_excecao'] = aula.motivo_excecao_limite if item['excecao_manual'] else ''
+        item['excecao_manual'] = bool(not proposta and not pendente and (aula.eh_excecao_limite_aulas or aula.eh_excecao_area_acumulo))
+        item['justificativa_excecao'] = (aula.motivo_excecao_area_acumulo or aula.motivo_excecao_limite) if item['excecao_manual'] else ''
         item['motivo_pendencia'] = item.get('motivo_pendencia', '') if proposta or pendente else aula.motivo_pendencia
         item['id'] = None if proposta or pendente else aula.pk
         campos_editor = {'proposta': indice} if proposta else {'editar': aula.pk} if not pendente else {
@@ -115,7 +115,7 @@ def dados_distribuicao(request, dia, contexto_auto):
                 continue
             itens = [a for a in itens_visiveis if a['unidade'].pk == unidade.pk]
             ids = {a['turma'].pk for a in itens if a['turma']}
-            colunas = [t for t in turmas if t.unidade_id == unidade.pk and (t.pk in ids or any(d.ativa for d in t.demandas.all()))]
+            colunas = [t for t in turmas if t.pk in ids or (t.unidade_id == unidade.pk and any(d.ativa for d in t.demandas.all()))]
             if any(not a['turma'] for a in itens):
                 colunas.append(None)
             if not colunas:

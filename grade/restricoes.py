@@ -173,8 +173,10 @@ class MotorRestricoes:
 
     def validar(self, alocacoes, proximidade=None):
         alocacoes = list(alocacoes)
-        from .excecoes_manuais import excecoes_persistidas, limite_autorizado
+        from .excecoes_manuais import excecoes_persistidas, limite_autorizado, manual_autorizado, assinatura_excecao
         excecoes = excecoes_persistidas(alocacoes)
+        originais = {a.pk: assinatura_excecao(a) for a in AlocacaoGrade.objects.filter(pk__in=[a.pk for a in alocacoes if a.pk])}
+        manuais = {id(a) for a in alocacoes if manual_autorizado(a, excecoes)}
         autorizadas = Counter()
         salas_anteriores = {a.pk: (a.data, a.horario_id, a.unidade_id, a.sala_id)
                             for a in AlocacaoGrade.objects.filter(pk__in=[a.pk for a in alocacoes if a.pk])}
@@ -195,6 +197,7 @@ class MotorRestricoes:
                 erros.append(f'{contexto}: o fim da aula deve ser posterior ao início.')
                 continue
             validas.append(a)
+            inicio_erros = len(erros)
             if a.sala_id:
                 sala = self.salas.get(a.sala_id)
                 antiga = salas_anteriores.get(a.pk) == (a.data, a.horario_id, a.unidade_id, a.sala_id)
@@ -219,15 +222,17 @@ class MotorRestricoes:
                              'aulas planejadas precisam manter os três vínculos.')
             if prof:
                 contagem[(a.professor_id, a.data)] += 1
-                if limite_autorizado(a, excecoes):
+                if limite_autorizado(a, excecoes) or id(a) in manuais:
                     autorizadas[(a.professor_id, a.data)] += 1
             if any(getattr(a, campo, False) for campo in (
                 'eh_excecao_horario',
-                'eh_excecao_deslocamento', 'eh_excecao_area_acumulo',
+                'eh_excecao_deslocamento',
             )):
                 erros.append(f'{contexto}: exceções não podem contornar as restrições obrigatórias.')
             if a.eh_excecao_limite_aulas and not limite_autorizado(a, excecoes):
                 erros.append(f'{contexto}: exceção de limite exige confirmação no editor manual e justificativa.')
+            if a.eh_excecao_area_acumulo and id(a) not in manuais:
+                erros.append(f'{contexto}: exceção exige termo de responsabilidade no editor manual e justificativa.')
             if a.turma_id:
                 turma = self.turmas.get(a.turma_id)
                 if not turma:
@@ -249,7 +254,10 @@ class MotorRestricoes:
                     if (a.turma_id != demanda.turma_id or a.disciplina_id != demanda.disciplina_id
                             or (a.professor_id and demanda.professor_id and a.professor_id != demanda.professor_id)):
                         erros.append(f'{contexto}: turma, disciplina ou professor incompatíveis com a demanda.')
+                if id(a) not in manuais:
                     demanda_contagem[(demanda.pk, segunda_da_semana(a.data))] += 1
+            if id(a) in manuais:
+                del erros[inicio_erros:]
         for (prof_id, data), quantidade in contagem.items():
             professor = self.professores[prof_id]
             if quantidade - autorizadas[(prof_id, data)] > professor.limite_aulas:
@@ -263,10 +271,15 @@ class MotorRestricoes:
         for a, b in combinations(validas, 2):
             motivo = self.motivo_conflito(a, b)
             if motivo:
-                erros.append(f'{a.data:%d/%m/%Y}: {motivo}')
+                autorizacao_nova = any(id(x) in manuais and getattr(x, '_excecao_manual_autorizada', False) for x in (a,b))
+                fixas_intactas = all(x.pk and originais.get(x.pk) == assinatura_excecao(x) for x in (a,b))
+                if not autorizacao_nova and not (fixas_intactas and (id(a) in manuais or id(b) in manuais)):
+                    erros.append(f'{a.data:%d/%m/%Y}: {motivo}')
         if erros:
             raise ValidationError(list(dict.fromkeys(erros)))
         avisos = self.avisos_parentesco(validas, proximidade)
+        avisos.extend(f'{a.data:%d/%m/%Y}: exceção manual sob responsabilidade do administrador — {a.motivo_excecao_area_acumulo}'
+                      for a in validas if id(a) in manuais)
         avisos.extend(f'{a.data:%d/%m/%Y}: exceção manual de limite diário registrada — {a.motivo_excecao_limite}'
                       for a in validas if limite_autorizado(a, excecoes))
         return avisos

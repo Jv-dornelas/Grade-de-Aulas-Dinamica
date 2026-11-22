@@ -12,7 +12,7 @@
         </nav>
     </div>
 
-    {% if por == 'unidade' %}<div class="visao-unidade"><nav class="modos-grade" aria-label="Per?odo da unidade"><a href="{{ url_visao_dia }}" {% if visao == 'dia' %}aria-current="true"{% endif %}>Dia ? turmas lado a lado</a><a href="{{ url_visao_semana }}" {% if visao == 'semana' %}aria-current="true"{% endif %}>Semana</a></nav><nav class="dias-unidade" aria-label="Dias da semana">{% for d in dias_navegacao %}<a class="btn" href="{{ d.url }}" {% if d.data == dia_distribuicao %}aria-current="date"{% endif %}>{{ d.data|date:'D d/m' }}</a>{% endfor %}</nav></div>{% endif %}
+    {% if por == 'unidade' %}<div class="visao-unidade"><nav class="modos-grade" aria-label="Período da unidade"><a href="{{ url_visao_dia }}" {% if visao == 'dia' %}aria-current="true"{% endif %}>Dia · turmas lado a lado</a><a href="{{ url_visao_semana }}" {% if visao == 'semana' %}aria-current="true"{% endif %}>Semana</a></nav><nav class="dias-unidade" aria-label="Dias da semana">{% for d in dias_navegacao %}<a class="btn" href="{{ d.url }}" {% if d.data == dia_distribuicao %}aria-current="date"{% endif %}>{{ d.data|date:'D d/m' }}</a>{% endfor %}</nav></div>{% endif %}
     <div class="semana-ferramentas">
         <nav class="modos-grade" aria-label="Visualizar distribuição por">
             {% for modo in modos_distribuicao %}

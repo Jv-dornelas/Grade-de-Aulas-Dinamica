@@ -45,7 +45,7 @@ class DemandaSelect(forms.Select):
 
 
 class AulaForm(forms.ModelForm):
-    confirmar_excecao = forms.BooleanField(required=False, label='Confirmo a exceção manual de limite diário')
+    confirmar_excecao = forms.BooleanField(required=False, label='Li os avisos e assumo a responsabilidade por esta alteração manual')
     justificativa_excecao = forms.CharField(required=False, max_length=200, label='Justificativa da exceção',
         widget=forms.Textarea(attrs={'rows': 2}))
     class Meta:
@@ -77,7 +77,7 @@ class AulaForm(forms.ModelForm):
         if proposta:
             self.fields['demanda'].disabled = True
             self.fields['unidade'].disabled = True
-        if self.instance.turma_id and self.instance.turma.materias_fixas and (proposta or self.instance.pk):
+        if self.instance.turma_id and self.instance.turma.materias_fixas and proposta:
             for campo in ('data', 'horario', 'demanda', 'unidade'):
                 self.fields[campo].disabled = True
 
@@ -92,9 +92,11 @@ class AulaForm(forms.ModelForm):
             motivo = (dados.get('justificativa_excecao') or '').strip()
             if confirmar and (not motivo or not self.usuario or not self.usuario.is_active or not self.usuario.is_staff):
                 raise ValidationError('Para confirmar a exceção manual, informe a justificativa. A ação exige um administrador ativo.')
-            self.instance.eh_excecao_limite_aulas = confirmar
-            self.instance.motivo_excecao_limite = motivo if confirmar else ''
-            self.instance._limite_manual_autorizado = confirmar
+            self.instance.eh_excecao_limite_aulas = False
+            self.instance.motivo_excecao_limite = ''
+            self.instance.eh_excecao_area_acumulo = confirmar
+            self.instance.motivo_excecao_area_acumulo = motivo if confirmar else ''
+            self.instance._excecao_manual_autorizada = confirmar
             if confirmar:
                 self.instance.autorizado_por = self.usuario
         return dados
@@ -183,13 +185,14 @@ def contexto_editor(request, auto, dia):
                         avisos = validar_alocacao_individual(aula)
                         aula.autorizado_por = request.user
                         aula.save()
-                        if aula.eh_excecao_limite_aulas:
+                        if aula.eh_excecao_area_acumulo:
+                            from .excecoes_manuais import mensagem_auditoria
                             from django.contrib.admin.models import LogEntry, CHANGE
                             from django.contrib.contenttypes.models import ContentType
                             LogEntry.objects.log_action(user_id=request.user.pk,
                                 content_type_id=ContentType.objects.get_for_model(aula).pk,
                                 object_id=aula.pk, object_repr=str(aula)[:200], action_flag=CHANGE,
-                                change_message='Exceção manual de limite diário: ' + aula.motivo_excecao_limite)
+                                change_message=mensagem_auditoria(aula))
                         messages.success(request, 'Aula salva na distribuição.')
                         for aviso in avisos:
                             messages.warning(request, aviso)

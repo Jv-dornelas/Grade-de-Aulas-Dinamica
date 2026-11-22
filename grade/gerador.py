@@ -117,9 +117,12 @@ def _gerar(inicio, fim, proximidade, prazo, conferir_tempo):
         return _resultado('invalid', ['A grade já salva tem inconsistências. Corrija antes de gerar:'] + exc.messages)
     conferir_tempo()
     contagem_fixas = Counter(a.demanda_id for a in fixas if a.demanda_id)
+    from .excecoes_manuais import excecoes_persistidas, manual_autorizado
+    auditoria_manual = excecoes_persistidas(fixas)
+    extras_manuais = Counter(a.demanda_id for a in fixas if manual_autorizado(a, auditoria_manual))
     excedentes = []
     for aula in fixas:
-        if aula.demanda_id and contagem_fixas[aula.demanda_id] > aula.demanda.quantidade_semana:
+        if aula.demanda_id and contagem_fixas[aula.demanda_id] - extras_manuais[aula.demanda_id] > aula.demanda.quantidade_semana:
             excedentes.append(f'A demanda {aula.demanda_id} já ultrapassa a quantidade semanal nas aulas salvas.')
     if excedentes:
         return _resultado('invalid', list(dict.fromkeys(excedentes)))

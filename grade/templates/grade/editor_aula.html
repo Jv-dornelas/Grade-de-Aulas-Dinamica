@@ -12,9 +12,9 @@
         <div class="campos-aula">{% for campo in aula_form %}{% if campo.name != 'confirmar_excecao' and campo.name != 'justificativa_excecao' %}<div><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{{ campo.errors }}{% if campo.help_text %}<small>{{ campo.help_text }}</small>{% endif %}</div>{% endif %}{% endfor %}</div>
         {% if not editor_proposta %}
         <details class="excecao-manual" {% if aula_form.errors or aula_form.confirmar_excecao.value %}open{% endif %}>
-            <summary>⚠ Exceção administrativa — somente limite diário</summary>
-            <p><strong>Atenção: esta opção permite ultrapassar o limite diário do professor.</strong> Confirme apenas após revisar o impacto. A justificativa, seu usuário e a data serão registrados. A automação não cria essas exceções.</p>
-            <p>Habilitação, disponibilidade, sala, turma e deslocamento continuam obrigatórios; esta confirmação não libera outros conflitos.</p>
+            <summary>⚠ Autorizar alteração manual fora das regras</summary>
+            <p><strong>Atenção: você está assumindo a responsabilidade por uma alteração potencialmente inconsistente.</strong> Esta autorização pode liberar habilitação, disponibilidade, limite, calendário, carga e conflitos de professor, sala ou deslocamento. Confirme apenas após revisar o impacto.</p>
+            <p>Declaro que revisei a situação e assumo a responsabilidade pela exceção, inclusive em aulas conjuntas. Minha justificativa, usuário e data ficarão registrados. A automação não criará essas exceções. Cadastre uma alocação por turma participante para que todas apareçam na grade.</p>
             <label class="confirmacao-excecao">{{ aula_form.confirmar_excecao }} {{ aula_form.confirmar_excecao.label }}</label>
             {{ aula_form.confirmar_excecao.errors }}
             <label for="{{ aula_form.justificativa_excecao.id_for_label }}">{{ aula_form.justificativa_excecao.label }}</label>

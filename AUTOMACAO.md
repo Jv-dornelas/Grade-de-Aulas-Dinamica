@@ -1,5 +1,19 @@
 # Automação semanal — versão para testes
 
+## Correções de teste e responsabilidade administrativa — 15/11/2026
+
+Validação final: 281 testes passaram; migrações dry-run sem mudanças. Cobertos termo/justificativa, autorização em edição de aula existente sem habilitação, duas turmas juntas, recusa de novo conflito sem autorização, preservação de carga extra manual pelo gerador, funções distintas de cursos e projeções. Cópia efetiva `db.automacao.sqlite3`, 732 aulas, quick_check OK e hash do original preservado. Testes usam banco separado; nenhum aviso real disparado. Interface verificada por HTML renderizado, sem inspeção visual em navegador nesta etapa. Alterações locais, sem push nesta rodada.
+
+O responsável ampliou explicitamente a autorização manual: com termo de responsabilidade e justificativa, o administrador pode assumir inconsistências de habilitação, disponibilidade, limite, unidade/calendário, carga e conflitos de professor/sala/deslocamento. Continua obrigatório referenciar cadastros existentes, data/horário válidos e preencher o formulário. A autorização genérica usa os campos legados `eh_excecao_area_acumulo`/`motivo_excecao_area_acumulo` e auditoria LogEntry, sem migração. A descrição abaixo de 11/11, restrita ao limite, é histórica e foi substituída por esta decisão.
+
+Termo e justificativa são obrigatórios por alteração. Cards e avisos marcam a autorização. Aulas conjuntas devem ter uma alocação por turma participante; ambas aparecem, inclusive com o mesmo professor e horário, quando a exceção é confirmada. Não há uma nova regra automática de agrupamento pedagógico ou cálculo de capacidade física: é uma decisão explícita do administrador, registrada na justificativa.
+
+A automação não recebe o termo nem cria exceções. Preserva somente registros salvos com auditoria e dados inalterados; um conflito antigo não libera automaticamente uma alocação nova. Comparações com aulas novas/alteradas continuam estritas. Carga semanal extra manual é preservada e não gera mais aulas automaticamente. Autorizações não são copiadas automaticamente por replicação. Não executar UPDATE direto em exceções para mudar dados sem validação/auditoria.
+
+Cursos: `/cursos/` consulta a lista e as cargas; `/cursos/novo/` cadastra curso e matriz; `/cursos/<id>/` edita um existente. Menu e títulos distinguem essas ações, sem formulário de novo curso duplicado na listagem. POSTs antigos continuam compatíveis.
+
+Visualização: a alteração experimental para preservar Semana ao entrar em Unidade foi desfeita a pedido do usuário: Unidade continua diária, com Semana opcional. Não atribuir o desaparecimento relatado à troca de período: o usuário confirmou que comparou o mesmo dia. A projeção diária inclui turmas alocadas excepcionalmente em outra unidade, caso de invisibilidade reproduzido em teste e corrigido. Os dados e a prévia não mudam ao alternar visualização. A conferência de leitura de todas as datas da cópia não encontrou descarte na projeção; HTML de quatro datas também mostrou todos os cards previstos. O caso específico relatado aguarda data/unidade para reprodução, sem declarar resolução por alteração do período.
+
 ## Exceção exclusiva do editor manual — 11/11/2026
 
 Validação: 274 testes passaram; dry-run sem mudanças de migração. Cobertos confirmação/justificativa, auditoria/card, rejeição de sobreposição e flag forjada, preservação pelo gerador sem novas exceções. Interface verificada por renderização HTML nos testes, sem inspeção visual em aparelho/navegador nesta etapa.

@@ -1,18 +1,19 @@
 # DER para apresentação
 
-O arquivo `diagrama-entidade-relacionamento.puml` contém cinco blocos independentes `@startuml ... @enduml`. Cada bloco gera uma imagem. Para usar um editor que mostre apenas um diagrama por vez, copie o bloco correspondente inteiro ou posicione o cursor nele na extensão PlantUML.
+O arquivo `diagrama-entidade-relacionamento.puml` contém seis blocos independentes `@startuml ... @enduml`. Cada bloco gera uma imagem. Para usar um editor que mostre apenas um diagrama por vez, copie o bloco correspondente inteiro ou posicione o cursor nele na extensão PlantUML.
 
-As cinco vistas compõem o mesmo DER. Nenhuma tabela foi removida: são 10 entidades próprias, o usuário do Django e três tabelas associativas. Os 25 relacionamentos e todos os campos dos modelos próprios foram conferidos com `grade/models.py`.
+As seis vistas compõem o mesmo DER atualizado. Os modelos próprios, as tabelas associativas e o usuário do Django foram conferidos com `grade/models.py`.
 
 ## Ordem de apresentação
 
-1. **Professores:** conta de acesso, unidade oficial, unidades permitidas, habilitações e parentesco.
-2. **Planejamento:** unidades, turmas, horários permitidos e demandas semanais.
-3. **Disponibilidades:** decisão por turno e decisão específica por horário.
-4. **Alocações:** aula agendada e suas referências, exceções e auditoria.
-5. **Deslocamentos:** origem, destino e tempo entre unidades.
+1. **Cadastros:** usuários, unidades, salas, disciplinas, professores e suas associações.
+2. **Cursos:** cursos, matrizes curriculares e vínculos das turmas.
+3. **Planejamento:** turmas, horários permitidos, demandas e distribuição curricular fixa.
+4. **Disponibilidades:** decisão por turno e decisão específica por horário.
+5. **Alocações:** aula agendada, sala, exceções, aprovação e avisos por e-mail.
+6. **Automação:** trajetos entre unidades, cache de mapas e proximidade familiar.
 
-As imagens PNG e SVG estão em `der-renderizado/`. O PDF para apresentação está em `../output/pdf/diagrama-entidade-relacionamento-revisado.pdf`. Os SVG permitem ampliar sem perda de nitidez. O PDF tem cinco páginas A3 em paisagem.
+As imagens PNG e SVG atualmente em `der-renderizado/` correspondem à versão anterior de cinco vistas. Para apresentar o modelo atualizado de seis vistas, renderize novamente o arquivo `.puml`. As imagens antigas foram preservadas como referência; não representam integralmente o modelo atual.
 
 ## Como ler as cardinalidades
 
@@ -44,9 +45,8 @@ As regras de exclusão, os nomes físicos das tabelas, os campos completos e as 
 
 ## Verificação realizada
 
-- Renderização local dos cinco blocos com PlantUML, em PNG e SVG.
-- Inspeção visual das cinco imagens e do PDF resultante.
-- Comparação das 25 associações com as declarações ForeignKey, OneToOneField e ManyToManyField dos modelos, incluindo nulabilidade e multiplicidade.
+- O arquivo fonte contém seis blocos; a atualização das imagens PNG e SVG não foi verificada nesta publicação.
+- Comparação das associações com as declarações ForeignKey, OneToOneField e ManyToManyField dos modelos, incluindo nulabilidade e multiplicidade.
 - Comparação dos campos de todas as entidades próprias e tabelas associativas com os modelos.
 
 Nenhum modelo, regra de negócio ou banco de dados foi alterado.

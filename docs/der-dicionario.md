@@ -1,6 +1,6 @@
 # Dicionário do DER
 
-As cinco vistas de `diagrama-entidade-relacionamento.puml` formam um único modelo. Os campos de cada entidade são apresentados integralmente em pelo menos uma vista. Entidades em cinza são referências à mesma tabela. Tipos são lógicos, não tipos físicos do SQLite.
+As seis vistas de `diagrama-entidade-relacionamento.puml` formam um único modelo atualizado. Os campos de cada entidade são apresentados integralmente em pelo menos uma vista. Entidades em cinza são referências à mesma tabela. Tipos são lógicos, não tipos físicos do SQLite.
 
 ## Entidades e campos
 

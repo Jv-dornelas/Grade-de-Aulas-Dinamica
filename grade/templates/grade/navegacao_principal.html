@@ -131,8 +131,8 @@
         <div class="menu-dropdown">
             <button type="button" class="menu-item">Curso <span class="seta">▼</span></button>
             <div class="dropdown-conteudo">
-                <a href="{% url 'grade:cursos' %}">Cadastrar curso</a>
-                <a href="{% url 'grade:cursos' %}#lista-cursos">Cursos e matriz</a>
+                <a href="{% url 'grade:curso_novo' %}">Cadastrar curso</a>
+                <a href="{% url 'grade:cursos' %}">Consultar cursos e matrizes</a>
             </div>
         </div>
         <form method="post" action="{% url 'grade:sair' %}" style="margin:0">

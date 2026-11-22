@@ -1,30 +1,13 @@
-' DER completo distribuído em cinco vistas do mesmo modelo.
-' Cada bloco @startuml pode ser copiado e renderizado separadamente.
-' Entidades repetidas são referências, não novas tabelas.
-' Tipos lógicos e cardinalidades conforme grade/models.py.
+' DER atualizado de Grade de Aulas Dinâmica
+' Cada bloco pode ser copiado e renderizado separadamente no PlantUML.
 
-@startuml DER_01_Professores
-title
-Grade de Aulas Dinâmica
-1/5 - Professores, acesso e habilitações
-end title
+@startuml DER_01_Cadastros
+title Grade de Aulas Dinâmica - 1/6 - Usuários e cadastros
 left to right direction
 hide circle
-skinparam shadowing false
 skinparam linetype polyline
-skinparam defaultFontName Arial
-skinparam defaultFontSize 14
-skinparam ArrowFontSize 13
-skinparam nodesep 45
-skinparam ranksep 65
-skinparam padding 12
-skinparam roundcorner 8
-skinparam classBorderColor #365B80
-skinparam ArrowColor #365B80
-skinparam legendBackgroundColor #FFFFFF
-skinparam legendBorderColor #CCD6E0
 
-entity "Usuário" as Usuario #EEF5FC {
+entity "auth_user" as Usuario {
   * id : INTEGER <<PK>>
   --
   * username : VARCHAR(150) <<UK>>
@@ -38,81 +21,8 @@ entity "Usuário" as Usuario #EEF5FC {
   last_login : DATETIME
   * date_joined : DATETIME
 }
-entity "Professor" as Professor #EEF5FC {
-  * id : INTEGER <<PK>>
-  --
-  usuario_id : INTEGER <<FK, UK>>
-  unidade_oficial_id : INTEGER <<FK>>
-  parente_vinculado_id : INTEGER <<FK>>
-  * nome : VARCHAR(100)
-  telefone : VARCHAR(20)
-  email : VARCHAR(254)
-  * meio_de_transporte : VARCHAR(20) = PARTICULAR
-  * limite_aulas : INTEGER >= 0 = 5
-  observacao : TEXT
-}
-entity "Unidade" as Unidade #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
-entity "Disciplina" as Disciplina #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
-entity "ProfessorDisciplina" as ProfessorDisciplina #E9F5EF {
-  * id : INTEGER <<PK>>
-  --
-  * professor_id : INTEGER <<FK>>
-  * disciplina_id : INTEGER <<FK>>
-}
-entity "ProfessorUnidadePermitida" as ProfessorUnidade #E9F5EF {
-  * id : INTEGER <<PK>>
-  --
-  * professor_id : INTEGER <<FK>>
-  * unidade_id : INTEGER <<FK>>
-}
-entity "Professor (papel: parente)" as Parente #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
 
-Usuario "0..1" -- "0..1" Professor : conta de acesso
-Professor "0..*" -- "0..1" Parente : parente_vinculado
-Professor "1" -- "0..*" ProfessorDisciplina
-ProfessorDisciplina "0..*" -- "1" Disciplina
-Professor "1" -- "0..*" ProfessorUnidade
-ProfessorUnidade "0..*" -- "1" Unidade
-Professor "0..*" -- "0..1" Unidade : unidade oficial
-
-legend bottom left
-  Professor (papel: parente) é a mesma entidade Professor, repetida para facilitar a leitura.
-  Cada professor aponta para até um parente; vários professores podem apontar para o mesmo parente.
-  Tabelas verdes resolvem N:N e têm UNIQUE no par de FKs.
-  Cardinalidades: 1 = exatamente um; 0..1 = opcional; 0..* = zero ou muitos.
-  PK = chave primária; FK = chave estrangeira; UK = chave única; * = NOT NULL.
-  Blocos cinza mostram apenas a chave de entidades detalhadas em outra vista.
-endlegend
-@enduml
-
-@startuml DER_02_Planejamento
-title
-Grade de Aulas Dinâmica
-2/5 - Turmas, horários permitidos e demandas
-end title
-left to right direction
-hide circle
-skinparam shadowing false
-skinparam linetype polyline
-skinparam defaultFontName Arial
-skinparam defaultFontSize 14
-skinparam ArrowFontSize 13
-skinparam nodesep 45
-skinparam ranksep 65
-skinparam padding 12
-skinparam roundcorner 8
-skinparam classBorderColor #365B80
-skinparam ArrowColor #365B80
-skinparam legendBackgroundColor #FFFFFF
-skinparam legendBorderColor #CCD6E0
-
-entity "Unidade" as Unidade #EEF5FC {
+entity "grade_unidade" as Unidade {
   * id : INTEGER <<PK>>
   --
   * nome : VARCHAR(50)
@@ -121,247 +31,360 @@ entity "Unidade" as Unidade #EEF5FC {
   cidade : VARCHAR(100)
   cep : VARCHAR(15)
 }
-entity "Turma" as Turma #EEF5FC {
+
+entity "grade_sala" as Sala {
   * id : INTEGER <<PK>>
   --
   * unidade_id : INTEGER <<FK>>
-  * nome : VARCHAR(80)
-  * dias_semana : JSON = [0,1,2,3,4]
+  * nome : VARCHAR(60)
+  * ativa : BOOLEAN
+  ==
+  UNIQUE(unidade_id, nome)
 }
-entity "HorarioAula" as HorarioAula #EEF5FC {
+
+entity "grade_disciplina" as Disciplina {
+  * id : INTEGER <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * area : VARCHAR(20)
+}
+
+entity "grade_professor" as Professor {
+  * id : INTEGER <<PK>>
+  --
+  usuario_id : INTEGER <<FK, UK>>
+  unidade_oficial_id : INTEGER <<FK>>
+  parente_vinculado_id : INTEGER <<FK>>
+  * nome : VARCHAR(100)
+  telefone : VARCHAR(20)
+  email : VARCHAR(254)
+  * meio_de_transporte : VARCHAR(20)
+  * limite_aulas : INTEGER = 5
+  observacao : TEXT
+}
+
+entity "grade_professor_disciplinas" as ProfessorDisciplina {
+  * id : INTEGER <<PK>>
+  --
+  * professor_id : INTEGER <<FK>>
+  * disciplina_id : INTEGER <<FK>>
+  ==
+  UNIQUE(professor_id, disciplina_id)
+}
+
+entity "grade_professor_unidades_permitidas" as ProfessorUnidade {
+  * id : INTEGER <<PK>>
+  --
+  * professor_id : INTEGER <<FK>>
+  * unidade_id : INTEGER <<FK>>
+  ==
+  UNIQUE(professor_id, unidade_id)
+}
+
+Usuario "0..1" -- "0..1" Professor : conta vinculada
+Professor "0..*" -- "0..1" Professor : parente_vinculado
+Professor "0..*" -- "0..1" Unidade : unidade oficial
+Professor "1" -- "0..*" ProfessorDisciplina
+ProfessorDisciplina "0..*" -- "1" Disciplina
+Professor "1" -- "0..*" ProfessorUnidade
+ProfessorUnidade "0..*" -- "1" Unidade
+Unidade "1" -- "0..*" Sala
+@enduml
+
+@startuml DER_02_Cursos
+title Grade de Aulas Dinâmica - 2/6 - Cursos e matriz curricular
+left to right direction
+hide circle
+skinparam linetype polyline
+
+entity "grade_curso" as Curso {
+  * id : INTEGER <<PK>>
+  --
+  * nome : VARCHAR(100) <<UK>>
+  observacoes : TEXT
+}
+
+entity "grade_matrizcurricular" as MatrizCurricular {
+  * id : INTEGER <<PK>>
+  --
+  * curso_id : INTEGER <<FK>>
+  * disciplina_id : INTEGER <<FK>>
+  * quantidade_semana : INTEGER
+  ==
+  UNIQUE(curso_id, disciplina_id)
+}
+
+entity "grade_disciplina" as Disciplina {
+  * id : INTEGER <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * area : VARCHAR(20)
+}
+
+entity "grade_turma" as Turma {
+  * id : INTEGER <<PK>>
+  --
+  * unidade_id : INTEGER <<FK>>
+  curso_id : INTEGER <<FK>>
+  * nome : VARCHAR(80)
+  * materias_fixas : BOOLEAN
+  turno_principal : VARCHAR(5)
+  dia_contraturno : INTEGER
+  * dias_semana : JSON
+  ==
+  UNIQUE(unidade_id, nome)
+}
+
+entity "grade_unidade" as Unidade {
+  * id : INTEGER <<PK>>
+  --
+  * nome : VARCHAR(50)
+  * responsavel : VARCHAR(100)
+}
+
+Curso "1" -- "0..*" MatrizCurricular
+MatrizCurricular "0..*" -- "1" Disciplina
+Curso "1" -- "0..*" Turma : oferta vinculada
+Turma "0..*" -- "1" Unidade
+@enduml
+
+@startuml DER_03_Planejamento
+title Grade de Aulas Dinâmica - 3/6 - Turmas, horários e demandas
+left to right direction
+hide circle
+skinparam linetype polyline
+
+entity "grade_horarioaula" as Horario {
   * id : INTEGER <<PK>>
   --
   * nome : VARCHAR(20)
   * hora_inicio : TIME
   * hora_fim : TIME
 }
-entity "TurmaHorario" as TurmaHorario #E9F5EF {
+
+entity "grade_turma" as Turma {
+  * id : INTEGER <<PK>>
+  --
+  * unidade_id : INTEGER <<FK>>
+  curso_id : INTEGER <<FK>>
+  * nome : VARCHAR(80)
+  * dias_semana : JSON
+}
+
+entity "grade_turma_horarios" as TurmaHorario {
   * id : INTEGER <<PK>>
   --
   * turma_id : INTEGER <<FK>>
   * horarioaula_id : INTEGER <<FK>>
+  ==
+  UNIQUE(turma_id, horarioaula_id)
 }
-entity "DemandaAula" as DemandaAula #EEF5FC {
+
+entity "grade_demandaaula" as Demanda {
   * id : INTEGER <<PK>>
   --
   * turma_id : INTEGER <<FK>>
   * disciplina_id : INTEGER <<FK>>
   professor_id : INTEGER <<FK>>
-  * quantidade_semana : INTEGER = 1
-  * ativa : BOOLEAN = true
+  * quantidade_semana : INTEGER
+  * ativa : BOOLEAN
+  * origem_curso : BOOLEAN
+  ==
+  UNIQUE(turma_id, disciplina_id)
 }
-entity "Disciplina" as Disciplina #EEF5FC {
+
+entity "grade_horariocurricular" as HorarioCurricular {
   * id : INTEGER <<PK>>
   --
-  * nome : VARCHAR(100)
-  * area : VARCHAR(20)
+  * turma_id : INTEGER <<FK>>
+  * demanda_id : INTEGER <<FK>>
+  * dia_semana : INTEGER
+  * horario_id : INTEGER <<FK>>
+  ==
+  UNIQUE(turma_id, dia_semana, horario_id)
 }
-entity "Professor" as Professor #F1F3F5 {
+
+entity "grade_disciplina" as Disciplina {
   * id : INTEGER <<PK>>
 }
 
-Unidade "1" -- "0..*" Turma : possui
-Turma "1" -- "0..*" TurmaHorario
-TurmaHorario "0..*" -- "1" HorarioAula
-Turma "1" -- "0..*" DemandaAula : necessita
-DemandaAula "0..*" -- "1" Disciplina : disciplina solicitada
-DemandaAula "0..*" -- "0..1" Professor : professor fixado
+entity "grade_professor" as Professor {
+  * id : INTEGER <<PK>>
+}
 
-legend bottom left
-  UNIQUE: Turma(unidade_id, nome); TurmaHorario(turma_id, horarioaula_id).
-  UNIQUE: DemandaAula(turma_id, disciplina_id). Professor fixado é opcional.
-  dias_semana é JSON: 0 = segunda; 6 = domingo. A demanda informa aulas por semana.
-  Cardinalidades: 1 = exatamente um; 0..1 = opcional; 0..* = zero ou muitos.
-  PK = chave primária; FK = chave estrangeira; UK = chave única; * = NOT NULL.
-  Blocos cinza mostram apenas a chave de entidades detalhadas em outra vista.
-endlegend
+Turma "1" -- "0..*" TurmaHorario
+TurmaHorario "0..*" -- "1" Horario
+Turma "1" -- "0..*" Demanda : possui demanda
+Demanda "0..*" -- "1" Disciplina
+Demanda "0..*" -- "0..1" Professor : professor fixado
+Turma "1" -- "0..*" HorarioCurricular
+Demanda "1" -- "0..*" HorarioCurricular
+HorarioCurricular "0..*" -- "1" Horario
 @enduml
 
-@startuml DER_03_Disponibilidades
-title
-Grade de Aulas Dinâmica
-3/5 - Disponibilidade por turno e por horário
-end title
+@startuml DER_04_Disponibilidade
+title Grade de Aulas Dinâmica - 4/6 - Disponibilidade dos professores
 left to right direction
 hide circle
-skinparam shadowing false
 skinparam linetype polyline
-skinparam defaultFontName Arial
-skinparam defaultFontSize 14
-skinparam ArrowFontSize 13
-skinparam nodesep 45
-skinparam ranksep 65
-skinparam padding 12
-skinparam roundcorner 8
-skinparam classBorderColor #365B80
-skinparam ArrowColor #365B80
-skinparam legendBackgroundColor #FFFFFF
-skinparam legendBorderColor #CCD6E0
 
-entity "Professor" as Professor #F1F3F5 {
+entity "grade_professor" as Professor {
   * id : INTEGER <<PK>>
+  * nome : VARCHAR(100)
 }
-entity "Disponibilidade" as Disponibilidade #EEF5FC {
+
+entity "grade_disponibilidade" as Disponibilidade {
   * id : INTEGER <<PK>>
   --
   * professor_id : INTEGER <<FK>>
   * data : DATE
-  * disponivel_manha : BOOLEAN = false
-  * disponivel_tarde : BOOLEAN = false
+  * disponivel_manha : BOOLEAN
+  * disponivel_tarde : BOOLEAN
 }
-entity "DisponibilidadeHorario" as DisponibilidadeHorario #EEF5FC {
+
+entity "grade_disponibilidadehorario" as DisponibilidadeHorario {
   * id : INTEGER <<PK>>
   --
   * professor_id : INTEGER <<FK>>
   * horario_id : INTEGER <<FK>>
   * data : DATE
-  * disponivel : BOOLEAN = true
-}
-entity "HorarioAula" as HorarioAula #F1F3F5 {
-  * id : INTEGER <<PK>>
+  * disponivel : BOOLEAN
+  ==
+  UNIQUE(professor_id, data, horario_id)
 }
 
-Professor "1" -- "0..*" Disponibilidade : por data e turno
-Professor "1" -- "0..*" DisponibilidadeHorario : por data e horário
-DisponibilidadeHorario "0..*" -- "1" HorarioAula
-
-legend bottom left
-  UNIQUE: DisponibilidadeHorario(professor_id, data, horario_id).
-  A decisão por horário tem prioridade sobre a disponibilidade por turno.
-  Disponibilidade não possui UNIQUE(professor_id, data) no modelo atual.
-  Cardinalidades: 1 = exatamente um; 0..1 = opcional; 0..* = zero ou muitos.
-  PK = chave primária; FK = chave estrangeira; UK = chave única; * = NOT NULL.
-  Blocos cinza mostram apenas a chave de entidades detalhadas em outra vista.
-endlegend
-@enduml
-
-@startuml DER_04_Alocacoes
-title
-Grade de Aulas Dinâmica
-4/5 - Aulas agendadas, exceções e auditoria
-end title
-left to right direction
-hide circle
-skinparam shadowing false
-skinparam linetype polyline
-skinparam defaultFontName Arial
-skinparam defaultFontSize 14
-skinparam ArrowFontSize 13
-skinparam nodesep 45
-skinparam ranksep 65
-skinparam padding 12
-skinparam roundcorner 8
-skinparam classBorderColor #365B80
-skinparam ArrowColor #365B80
-skinparam legendBackgroundColor #FFFFFF
-skinparam legendBorderColor #CCD6E0
-
-entity "Professor" as Professor #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
-entity "Unidade" as Unidade #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
-entity "HorarioAula" as HorarioAula #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
-entity "AlocacaoGrade" as AlocacaoGrade #FFF4DE {
+entity "grade_horarioaula" as Horario {
   * id : INTEGER <<PK>>
   --
+  * hora_inicio : TIME
+  * hora_fim : TIME
+}
+
+Professor "1" -- "0..*" Disponibilidade
+Professor "1" -- "0..*" DisponibilidadeHorario
+DisponibilidadeHorario "0..*" -- "1" Horario
+@enduml
+
+@startuml DER_05_Alocacoes
+title Grade de Aulas Dinâmica - 5/6 - Alocações e aprovação
+left to right direction
+hide circle
+skinparam linetype polyline
+
+entity "grade_alocacaograde" as Alocacao {
+  * id : INTEGER <<PK>>
+  --
+  * data : DATE
   * horario_id : INTEGER <<FK>>
   * unidade_id : INTEGER <<FK>>
-  * professor_id : INTEGER <<FK>>
+  sala_id : INTEGER <<FK>>
+  professor_id : INTEGER <<FK>>
+  motivo_pendencia : VARCHAR(240)
   turma_id : INTEGER <<FK>>
   disciplina_id : INTEGER <<FK>>
   demanda_id : INTEGER <<FK>>
-  autorizado_por_id : INTEGER <<FK>>
-  * data : DATE
-  * eh_excecao_limite_aulas : BOOLEAN = false
+  eh_excecao_limite_aulas : BOOLEAN
   motivo_excecao_limite : VARCHAR(200)
-  * eh_excecao_horario : BOOLEAN = false
+  eh_excecao_horario : BOOLEAN
   motivo_excecao_horario : VARCHAR(200)
-  * eh_excecao_deslocamento : BOOLEAN = false
+  eh_excecao_deslocamento : BOOLEAN
   motivo_excecao_deslocamento : VARCHAR(200)
-  * eh_excecao_area_acumulo : BOOLEAN = false
+  eh_excecao_area_acumulo : BOOLEAN
   motivo_excecao_area_acumulo : VARCHAR(200)
+  autorizado_por_id : INTEGER <<FK>>
   criado_em : DATETIME
   atualizado_em : DATETIME
 }
-entity "Turma" as Turma #F1F3F5 {
+
+entity "grade_aprovacaograde" as Aprovacao {
   * id : INTEGER <<PK>>
-}
-entity "Disciplina" as Disciplina #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
-entity "DemandaAula" as DemandaAula #F1F3F5 {
-  * id : INTEGER <<PK>>
-}
-entity "Usuário" as Usuario #F1F3F5 {
-  * id : INTEGER <<PK>>
+  --
+  * semana : DATE
+  * assinatura : VARCHAR(64)
+  aprovado_por_id : INTEGER <<FK>>
+  * aprovado_em : DATETIME
+  * total_aulas : INTEGER
+  * pendentes : INTEGER
+  * parcial : BOOLEAN
+  ==
+  UNIQUE(semana, assinatura)
 }
 
-Professor "1" -- "0..*" AlocacaoGrade : professor da aula
-Unidade "1" -- "0..*" AlocacaoGrade : local da aula
-HorarioAula "1" -- "0..*" AlocacaoGrade : horário da aula
-AlocacaoGrade "0..*" -- "0..1" Turma : turma
-AlocacaoGrade "0..*" -- "0..1" Disciplina : disciplina
-AlocacaoGrade "0..*" -- "0..1" DemandaAula : demanda atendida
-AlocacaoGrade "0..*" -- "0..1" Usuario : autorizado_por
+entity "grade_aviso_grade_email" as AvisoEmail {
+  * id : INTEGER <<PK>>
+  --
+  * aprovacao_id : INTEGER <<FK>>
+  * professor_id : INTEGER <<FK>>
+  destinatario : VARCHAR(254)
+  * assinatura_grade : VARCHAR(64)
+  * assunto : VARCHAR(200)
+  * corpo : TEXT
+  * estado : VARCHAR(20)
+  * tentativas : INTEGER
+  * atualizado_em : DATETIME
+  ==
+  UNIQUE(aprovacao_id, professor_id)
+}
 
-legend bottom left
-  Cada alocação exige exatamente um professor, uma unidade e um horário.
-  Turma, disciplina, demanda e usuário autorizador aceitam NULL no modelo atual.
-  Essas FKs existem diretamente na alocação, mesmo quando a demanda também identifica a turma e a disciplina.
-  Cardinalidades: 1 = exatamente um; 0..1 = opcional; 0..* = zero ou muitos.
-  PK = chave primária; FK = chave estrangeira; UK = chave única; * = NOT NULL.
-  Blocos cinza mostram apenas a chave de entidades detalhadas em outra vista.
-endlegend
+entity "grade_professor" as Professor { * id : INTEGER <<PK>> }
+entity "grade_unidade" as Unidade { * id : INTEGER <<PK>> }
+entity "grade_sala" as Sala { * id : INTEGER <<PK>> }
+entity "grade_horarioaula" as Horario { * id : INTEGER <<PK>> }
+entity "grade_turma" as Turma { * id : INTEGER <<PK>> }
+entity "grade_disciplina" as Disciplina { * id : INTEGER <<PK>> }
+entity "grade_demandaaula" as Demanda { * id : INTEGER <<PK>> }
+entity "auth_user" as Usuario { * id : INTEGER <<PK>> }
+
+Professor "1" -- "0..*" Alocacao : leciona
+Unidade "1" -- "0..*" Alocacao : recebe
+Sala "0..1" -- "0..*" Alocacao : reserva
+Horario "1" -- "0..*" Alocacao : possui
+Alocacao "0..*" -- "0..1" Turma
+Alocacao "0..*" -- "0..1" Disciplina
+Alocacao "0..*" -- "0..1" Demanda
+Alocacao "0..*" -- "0..1" Usuario : autorizado por
+
+Usuario "1" -- "0..*" Aprovacao : aprova
+Aprovacao "1" -- "0..*" AvisoEmail
+Professor "1" -- "0..*" AvisoEmail
 @enduml
 
-@startuml DER_05_Deslocamentos
-title
-Grade de Aulas Dinâmica
-5/5 - Tempo de deslocamento entre unidades
-end title
+@startuml DER_06_Automacao
+title Grade de Aulas Dinâmica - 6/6 - Trajetos e configuração
 left to right direction
 hide circle
-skinparam shadowing false
 skinparam linetype polyline
-skinparam defaultFontName Arial
-skinparam defaultFontSize 14
-skinparam ArrowFontSize 13
-skinparam nodesep 45
-skinparam ranksep 65
-skinparam padding 12
-skinparam roundcorner 8
-skinparam classBorderColor #365B80
-skinparam ArrowColor #365B80
-skinparam legendBackgroundColor #FFFFFF
-skinparam legendBorderColor #CCD6E0
 
-entity "Unidade (papel: origem)" as Origem #F1F3F5 {
+entity "grade_unidade" as Unidade {
   * id : INTEGER <<PK>>
+  * nome : VARCHAR(50)
 }
-entity "MatrizDistancia" as MatrizDistancia #EEF5FC {
+
+entity "grade_matrizdistancia" as MatrizDistancia {
   * id : INTEGER <<PK>>
   --
   * origem_id : INTEGER <<FK>>
   * destino_id : INTEGER <<FK>>
-  * tempo_minutos : INTEGER >= 0
-}
-entity "Unidade (papel: destino)" as Destino #F1F3F5 {
-  * id : INTEGER <<PK>>
+  * tempo_minutos : INTEGER
+  distancia_km : DECIMAL
+  fonte : VARCHAR(30)
+  consultado_em : DATETIME
+  enderecos_hash : VARCHAR(64)
 }
 
-Origem "1" -- "0..*" MatrizDistancia : origem_id
-MatrizDistancia "0..*" -- "1" Destino : destino_id
+entity "grade_cacheconsultamapas" as CacheMapas {
+  * chave : VARCHAR(64) <<PK>>
+  --
+  * dados : JSON
+  * criado_em : DATETIME
+}
 
-legend bottom left
-  Origem e destino são papéis da mesma tabela Unidade, não são duas tabelas distintas.
-  Cada registro exige uma origem e um destino; cada unidade pode aparecer em vários registros.
-  O tempo é direcional. Não há UNIQUE(origem_id, destino_id) no modelo atual.
-  Cardinalidades: 1 = exatamente um; 0..1 = opcional; 0..* = zero ou muitos.
-  PK = chave primária; FK = chave estrangeira; UK = chave única; * = NOT NULL.
-  Blocos cinza mostram apenas a chave de entidades detalhadas em outra vista.
-endlegend
+entity "grade_configuracaoautomacao" as Configuracao {
+  * id : INTEGER <<PK>> = 1
+  --
+  * proximidade_parentesco_minutos : INTEGER = 15
+}
+
+Unidade "1" -- "0..*" MatrizDistancia : origem
+Unidade "1" -- "0..*" MatrizDistancia : destino
 @enduml

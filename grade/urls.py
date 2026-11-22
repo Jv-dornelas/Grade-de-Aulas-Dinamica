@@ -21,6 +21,7 @@ urlpatterns = [
     path('sair/', SaidaView.as_view(), name='sair'),
     path('grade.pdf', grade_pdf, name='grade_pdf'),
     path('cursos/', cursos.cursos, name='cursos'),
+    path('cursos/novo/', cursos.cursos, {'novo': True}, name='curso_novo'),
     path('cursos/<int:pk>/', cursos.cursos, name='curso_editar'),
     path('turmas/', cursos.turmas, name='turmas'),
     path('turmas/<int:pk>/', cursos.turmas, name='turma_editar'),
